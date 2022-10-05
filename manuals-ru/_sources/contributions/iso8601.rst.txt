@@ -1,0 +1,37 @@
+.. _library_iso8601:
+
+``iso8601``
+===========
+
+ISO 8601 (and European civil calendar) compliant library of date and
+time (clock) related predicates. That is, an ISO 8601 handler.
+
+Author: Daniel L. Dudley Created: 2004-02-18
+
+Modified: 2014-09-26 (to use the library "os" object to get the current
+date)
+
+Документация интерфейса прикладного программирования
+-----------------
+
+Open the
+`../../docs/library_index.html#iso8601 <../../docs/library_index.html#iso8601>`__
+link in a web browser.
+
+Загрузка
+-------
+
+Чтобы загрузить все сущности этой библиотеки, используйте файл ``loader.lgt ``:
+
+::
+
+   | ?- logtalk_load(iso8601(loader)).
+
+Тестирование
+-------
+
+Чтобы проверить предикаты этой библиотеки, используйте файл ``tester.lgt ``:
+
+::
+
+   | ?- logtalk_load(iso8601(tester)).

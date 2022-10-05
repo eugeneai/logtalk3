@@ -1,0 +1,50 @@
+.. _library_types:
+
+``types``
+=========
+
+This library implements predicates over standard Prolog term types and
+also term representing common data structures such as lists and pairs.
+
+It also includes a user-extensible ``type`` object defining type
+checking predicates over common Logtalk and Prolog term types. The types
+define a hierarchy with the Prolog type ``term`` at the root (i.e.
+type-checking a predicate argument of type ``term`` trivially succeeds).
+Some types are only meaningful for backend Prolog systems supporting
+non-universal features (e.g. ``cyclic`` or ``char(CharSet)`` with a
+Unicode character set). See the API documentation for a full list of the
+types defined by default.
+
+Документация интерфейса прикладного программирования
+-----------------
+
+Open the
+`../../docs/library_index.html#types <../../docs/library_index.html#types>`__
+link in a web browser.
+
+Загрузка
+-------
+
+Чтобы загрузить все сущности этой библиотеки, используйте файл ``loader.lgt ``:
+
+::
+
+   | ?- logtalk_load(types(loader)).
+
+In case your code only requires the most basic types, you can load in
+alternative the file:
+
+::
+
+   | ?- logtalk_load(basic_types(loader)).
+
+See the notes on the ``basic_types`` virtual library for details.
+
+Тестирование
+-------
+
+Чтобы проверить предикаты этой библиотеки, используйте файл ``tester.lgt ``:
+
+::
+
+   | ?- logtalk_load(types(tester)).

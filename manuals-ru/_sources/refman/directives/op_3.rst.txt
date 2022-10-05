@@ -1,0 +1,60 @@
+..
+   Этот файл является частью проекта Logtalk <https://logtalk.org/>  
+   Copyright 1998-2022 Paulo Moura <pmoura@logtalk.org>
+   Идентификатор лицензии SPDX: Apache-2.0
+
+   Лицензируется в соответствии с лицензией Apache, версия 2.0 (далее «Лицензия»);
+   вы не можете использовать этот файл иначе, как в соответствии с Лицензией.
+   Вы можете получить копию Лицензии на
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+
+
+.. rst-class:: align-right
+
+**directive**
+
+.. index:: pair: op/3; Directive
+.. _directives_op_3:
+
+``op/3``
+========
+
+Description
+-----------
+
+::
+
+   op(Precedence, Associativity, Operator)
+   op(Precedence, Associativity, [Operator, ...])
+
+Declares operators. Operators declared inside entities have local scope.
+Global operators can be declared inside a source file by writing the
+respective directives before the entity opening directives.
+
+Template and modes
+------------------
+
+::
+
+   op(+integer, +associativity, +atom_or_atom_list)
+
+Examples
+--------
+
+::
+
+   :- op(200, fy, +).
+   :- op(200, fy, ?).
+   :- op(200, fy, @).
+   :- op(200, fy, -).
+
+.. seealso::
+
+   :ref:`methods_current_op_3`

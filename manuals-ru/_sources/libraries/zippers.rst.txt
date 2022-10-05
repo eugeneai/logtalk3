@@ -1,0 +1,31 @@
+.. _library_zippers:
+
+``zippers``
+===========
+
+This library implements zippers over lists.
+
+Документация интерфейса прикладного программирования
+-----------------
+
+Open the
+`../../docs/library_index.html#zippers <../../docs/library_index.html#zippers>`__
+link in a web browser.
+
+Загрузка
+-------
+
+Чтобы загрузить все сущности этой библиотеки, используйте файл ``loader.lgt ``:
+
+::
+
+   | ?- logtalk_load(zippers(loader)).
+
+Тестирование
+-------
+
+Чтобы проверить предикаты этой библиотеки, используйте файл ``tester.lgt ``:
+
+::
+
+   | ?- logtalk_load(zippers(tester)).

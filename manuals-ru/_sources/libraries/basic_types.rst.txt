@@ -1,0 +1,39 @@
+.. _library_basic_types:
+
+``basic_types``
+===============
+
+The ``basic_types`` library is a virtual library that loads only basic
+types from the ``types`` library:
+
+-  ``comparingp``
+-  ``termp``, ``term``
+-  ``atomic``, ``atom``, ``number``, ``float``, ``integer``
+-  ``compound``, ``listp``, ``list``
+-  ``type``
+
+Документация интерфейса прикладного программирования
+-----------------
+
+Open the
+`../../docs/library_index.html#types <../../docs/library_index.html#types>`__
+link in a web browser.
+
+Загрузка
+-------
+
+Чтобы загрузить все сущности этой библиотеки, используйте файл ``loader.lgt ``:
+
+::
+
+   | ?- logtalk_load(basic_types(loader)).
+
+Тестирование
+-------
+
+To test this library predicates, load the ``tester.lgt`` file for the
+``types`` library:
+
+::
+
+   | ?- logtalk_load(types(tester)).

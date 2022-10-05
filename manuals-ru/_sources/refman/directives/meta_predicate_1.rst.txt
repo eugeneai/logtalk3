@@ -1,0 +1,106 @@
+..
+   Этот файл является частью проекта Logtalk <https://logtalk.org/>  
+   Copyright 1998-2022 Paulo Moura <pmoura@logtalk.org>
+   Идентификатор лицензии SPDX: Apache-2.0
+
+   Лицензируется в соответствии с лицензией Apache, версия 2.0 (далее «Лицензия»);
+   вы не можете использовать этот файл иначе, как в соответствии с Лицензией.
+   Вы можете получить копию Лицензии на
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+
+
+.. rst-class:: align-right
+
+**directive**
+
+.. index:: pair: meta_predicate/1; Directive
+.. _directives_meta_predicate_1:
+
+``meta_predicate/1``
+====================
+
+Description
+-----------
+
+::
+
+   meta_predicate(Template)
+   meta_predicate((Template, ...))
+   meta_predicate([Template, ...])
+
+   meta_predicate(Entity::Template)
+   meta_predicate((Entity::Template, ...))
+   meta_predicate([Entity::Template, ...])
+
+   meta_predicate(Module:Template)
+   meta_predicate((Module:Template, ...))
+   meta_predicate([Module:Template, ...])
+
+Declares meta-predicates, i.e., predicates that have arguments that will
+be called as goals. An argument may also be a :term:`closure` instead of a
+goal if the meta-predicate uses the :ref:`methods_call_N` Logtalk built-in
+methods to construct and call the actual goal from the closure and the
+additional arguments.
+
+Meta-arguments which are goals are represented by the integer ``0``.
+Meta-arguments which are closures are represented by a positive integer,
+``N``, representing the number of additional arguments that will be
+appended to the closure in order to construct the corresponding meta-call.
+Meta-arguments that will be called using the ``bagof/3`` or ``setof/3``
+predicates and that can thus be existentially-qualified are represented
+by the atom ``^``. Normal arguments are represented by the atom ``*``.
+Meta-arguments are always called in the meta-predicate
+:term:`calling context <predicate calling context>`, not in the
+meta-predicate :term:`definition context <predicate definition context>`.
+
+Logtalk allows the use of this directive to override the original
+meta-predicate directive. This is sometimes necessary when calling
+Prolog built-in meta-predicates or Prolog module meta-predicates due
+to the lack of standardization of the syntax of the meta-predicate
+templates.
+
+.. warning::
+
+   Some backend Prolog compilers declare the atom ``meta_predicate`` as
+   an operator for a lighter syntax. But this makes the code non-portable
+   and is therefore a practice best avoided.
+
+Template and modes
+------------------
+
+::
+
+   meta_predicate(+meta_predicate_template_term)
+
+   meta_predicate(+object_identifier::+meta_predicate_template_term)
+   meta_predicate(+category_identifier::+meta_predicate_template_term)
+
+   meta_predicate(+module_identifier:+meta_predicate_template_term)
+
+Examples
+--------
+
+::
+
+   % findall/3 second argument is interpreted as a goal:
+   :- meta_predicate(findall(*, 0, *)).
+
+   % both forall/2 arguments are interpreted as goals:
+   :- meta_predicate(forall(0, 0)).
+
+   % maplist/3 first argument is interpreted as a closure
+   % that will be expanded to a goal by appending two
+   % arguments:
+   :- meta_predicate(maplist(2, *, *)).
+
+.. seealso::
+
+   :ref:`directives_meta_non_terminal_1`,
+   :ref:`methods_predicate_property_2`

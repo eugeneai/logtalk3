@@ -1,0 +1,42 @@
+.. _library_flags:
+
+``flags``
+=========
+
+Система "Flags" разработанна в Университете Katholieke, Leuven
+
+| Copyright 2010
+| Katholieke Universiteit Leuven
+
+License: The Artistic License 2.0
+
+| Contributions to this file:
+| Author: Theofrastos Mantadelis
+| Suggestions: Paulo Moura
+| Version: 1
+| Date: 27/11/2010
+
+Документация интерфейса прикладного программирования
+-----------------
+
+Открвть в браузере ссылку
+`../../docs/library_index.html#flags <../../docs/library_index.html#flags>`__
+
+
+Загрузка
+-------
+
+Чтобы загрузить все сущности этой библиотеки, используйте файл ``loader.lgt ``:
+
+::
+
+   ?- logtalk_load(flags(loader)).
+
+Тестирование
+-------
+
+Чтобы проверить предикаты этой библиотеки, используйте файл ``tester.lgt ``:
+
+::
+
+   | ?- logtalk_load(flags(tester)).

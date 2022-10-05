@@ -1,0 +1,36 @@
+.. _library_term_io:
+
+``term_io``
+===========
+
+This library implements predicates for reading/writing terms from/to
+atoms, chars (lists of characters), and codes (lists of character
+codes). These predicates are implemented using a single temporary file
+created when the library is loaded. This temporary file is unique per
+Logtalk process. The predicates can be safely used in multi-threaded
+applications.
+
+Документация интерфейса прикладного программирования
+-----------------
+
+Open the
+`../../docs/library_index.html#term-io <../../docs/library_index.html#term-io>`__
+link in a web browser.
+
+Загрузка
+-------
+
+Чтобы загрузить все сущности этой библиотеки, используйте файл ``loader.lgt ``:
+
+::
+
+   | ?- logtalk_load(term_io(loader)).
+
+Тестирование
+-------
+
+Чтобы проверить предикаты этой библиотеки, используйте файл ``tester.lgt ``:
+
+::
+
+   | ?- logtalk_load(term_io(tester)).

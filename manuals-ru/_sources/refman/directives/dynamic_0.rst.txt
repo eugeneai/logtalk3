@@ -1,0 +1,64 @@
+..
+   Этот файл является частью проекта Logtalk <https://logtalk.org/>  
+   Copyright 1998-2022 Paulo Moura <pmoura@logtalk.org>
+   Идентификатор лицензии SPDX: Apache-2.0
+
+   Лицензируется в соответствии с лицензией Apache, версия 2.0 (далее «Лицензия»);
+   вы не можете использовать этот файл иначе, как в соответствии с Лицензией.
+   Вы можете получить копию Лицензии на
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+
+
+.. rst-class:: align-right
+
+**directive**
+
+.. index:: pair: dynamic/0; Directive
+.. _directives_dynamic_0:
+
+``dynamic/0``
+=============
+
+Description
+-----------
+
+::
+
+   dynamic
+
+Declares an entity and its contents as dynamic. Dynamic entities can be
+abolished at runtime.
+
+.. warning::
+
+   Some backend Prolog compilers declare the atom ``dynamic`` as an operator
+   for a lighter syntax, forcing writing this atom between parenthesis
+   when using this directive.
+
+Template and modes
+------------------
+
+::
+
+   dynamic
+
+Examples
+--------
+
+::
+
+   :- dynamic.
+
+.. seealso::
+
+   :ref:`directives_dynamic_1`,
+   :ref:`predicates_object_property_2`,
+   :ref:`predicates_protocol_property_2`,
+   :ref:`predicates_category_property_2`

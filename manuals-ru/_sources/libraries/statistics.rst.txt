@@ -1,0 +1,34 @@
+.. _library_statistics:
+
+``statistics``
+==============
+
+The entities in this group define some useful predicates for descriptive
+statistics. Data is represented as a list of numbers (integers or
+floats). Use the object ``sample`` of your data represents a sample. Use
+the object ``population`` if your data represents a population.
+
+Документация интерфейса прикладного программирования
+-----------------
+
+Open the
+`../../docs/library_index.html#statistics <../../docs/library_index.html#statistics>`__
+link in a web browser.
+
+Загрузка
+-------
+
+Чтобы загрузить все сущности этой библиотеки, используйте файл ``loader.lgt ``:
+
+::
+
+   | ?- logtalk_load(statistics(loader)).
+
+Тестирование
+-------
+
+Чтобы проверить предикаты этой библиотеки, используйте файл ``tester.lgt ``:
+
+::
+
+   | ?- logtalk_load(statistics(tester)).

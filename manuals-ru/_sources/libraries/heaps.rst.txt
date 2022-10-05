@@ -1,0 +1,37 @@
+.. _library_heaps:
+
+``heaps``
+=========
+
+This library implements minimum and maximum heaps.
+
+Документация интерфейса прикладного программирования
+-----------------
+
+Open the
+`../../docs/library_index.html#heaps <../../docs/library_index.html#heaps>`__
+link in a web browser.
+
+Загрузка
+-------
+
+Чтобы загрузить все сущности этой библиотеки, используйте файл ``loader.lgt ``:
+
+::
+
+   | ?- logtalk_load(heaps(loader)).
+
+Тестирование
+-------
+
+Чтобы проверить предикаты этой библиотеки, используйте файл ``tester.lgt ``:
+
+::
+
+   | ?- logtalk_load(heaps(tester)).
+
+Credits
+-------
+
+Original code by Richard O''Keefe. Adapted to Logtalk by Paulo Moura and
+Victor Lagerkvist.

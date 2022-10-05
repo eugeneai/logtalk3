@@ -1,0 +1,33 @@
+.. _library_intervals:
+
+``intervals``
+=============
+
+This library provides an ``intervalp`` protocol and an ``interval``
+object that implement basic temporal interval relations protocol (based
+on the James F. Allen Interval Algebra work).
+
+Документация интерфейса прикладного программирования
+-----------------
+
+Open the
+`../../docs/library_index.html#intervals <../../docs/library_index.html#intervals>`__
+link in a web browser.
+
+Загрузка
+-------
+
+Чтобы загрузить все сущности этой библиотеки, используйте файл ``loader.lgt ``:
+
+::
+
+   | ?- logtalk_load(intervals(loader)).
+
+Тестирование
+-------
+
+Чтобы проверить предикаты этой библиотеки, используйте файл ``tester.lgt ``:
+
+::
+
+   | ?- logtalk_load(intervals(tester)).

@@ -1,0 +1,31 @@
+..
+   Этот файл является частью проекта Logtalk <https://logtalk.org/>  
+   Copyright 1998-2022 Paulo Moura <pmoura@logtalk.org>
+   Идентификатор лицензии SPDX: Apache-2.0
+
+   Лицензируется в соответствии с лицензией Apache, версия 2.0 (далее «Лицензия»);
+   вы не можете использовать этот файл иначе, как в соответствии с Лицензией.
+   Вы можете получить копию Лицензии на
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+
+
+.. _source_file_directives:
+
+Source file directives
+======================
+
+.. toctree::
+   :maxdepth: 1
+
+   encoding_1
+   include_1
+   initialization_1
+   op_3
+   set_logtalk_flag_2

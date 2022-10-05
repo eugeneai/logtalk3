@@ -1,0 +1,70 @@
+..
+   Этот файл является частью проекта Logtalk <https://logtalk.org/>  
+   Copyright 1998-2022 Paulo Moura <pmoura@logtalk.org>
+   Идентификатор лицензии SPDX: Apache-2.0
+
+   Лицензируется в соответствии с лицензией Apache, версия 2.0 (далее «Лицензия»);
+   вы не можете использовать этот файл иначе, как в соответствии с Лицензией.
+   Вы можете получить копию Лицензии на
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+
+
+.. rst-class:: align-right
+
+**built-in predicate**
+
+.. index:: pair: threaded_engine_post/2; Built-in predicate
+.. _predicates_threaded_engine_post_2:
+
+``threaded_engine_post/2``
+==========================
+
+Description
+-----------
+
+::
+
+   threaded_engine_post(Engine, Term)
+
+Posts a term to the engine term queue.
+
+.. note::
+
+   This predicate requires a :term:`backend Prolog compiler` providing
+   compatible multi-threading primitives. The value of the read-only
+   :ref:`engines <flag_engines>` flag is set to ``supported`` when that
+   is the case.
+
+Modes and number of proofs
+--------------------------
+
+::
+
+   threaded_engine_post(@nonvar, @term) - one
+
+Errors
+------
+
+| ``Engine`` is a variable:
+|     ``instantiation_error``
+| ``Engine`` is neither a variable nor the name of an existing engine:
+|     ``existence_error(engine, Engine)``
+
+Examples
+--------
+
+::
+
+   % post the atom "ready" to the worker_1 engine queue:
+   | ?- threaded_engine_post(worker_1, ready).
+
+.. seealso::
+
+   :ref:`predicates_threaded_engine_fetch_1`
