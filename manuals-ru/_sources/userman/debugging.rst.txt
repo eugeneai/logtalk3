@@ -18,135 +18,102 @@
 
 .. _debugging_debugging:
 
-Debugging
-=========
+Отладка
+=======
 
-The Logtalk distribution includes a command-line :doc:`../devtools/debugger`
-tool implemented as a Logtalk application. It can be loaded by typing:
+Дистрибутив Logtalk включает в себя инструмент командной строки :doc:`../devtools/debugger`, реализованный в виде приложения Logtalk. Его можно запустить, набрав:
 
 .. code-block:: text
 
    | ?- logtalk_load(debugger(loader)).
 
-It can also be loaded automatically at startup time by using a
-:term:`settings file`. This tool implements debugging features similar to
-those found on most Prolog systems. There are some differences, however,
-between the usual implementation of Prolog debuggers and the current
-implementation of the Logtalk debugger that you should be aware. First,
-unlike most Prolog debuggers, the Logtalk debugger is not a built-in feature
-but a regular Logtalk application using documented debugging hook predicates.
-This translates to a different, although similar, set of debugging features
-when compared with some of the more sophisticated Prolog debuggers. Second,
-debugging is only possible for entities compiled in debug mode. When
-compiling an entity in debug mode, Logtalk decorates clauses with source
-information to allow tracing of the goal execution. Third, the implementation
-of spy points allows the user to specify the
-:term:`execution context <predicate execution context>` for entering
-the debugger. This feature is a consequence of the encapsulation of
-predicates inside objects.
+Он также может быть загружен автоматически во время запуска с помощью :term: `settings file`. Отладчик реализует функции, аналогичные тем, что встречаются в большинстве систем Prolog. Однако существуют и некоторые различия между обычной реализацией отладчиков Prolog и текущей отладчиком Logtalk, о которых следует упомянуть. Во-первых, в отличие от большинства отладчиков Prolog, отладчик Logtalk не является встроенной функцией, он - обычное приложение Logtalk, использующее задокументированные предикаты отладки.
+Отладчик включает свой, хотя и схожий набор функций отладки по сравнению с некоторыми более сложными отладчиками Prolog. Во-вторых, отладка возможна только для сущностей, скомпилированных в режиме отладки. В этом режиме компиляции, Logtalk окружает утверждения информацией об исходном коде, позволяющей отслеживать достижение цели. В-третьих, реализация точек останова позволяет пользователю указывать
+:term:`execution context <predicate execution context>` для входа в отладчик. Эта функция появилась из-за инкапсуляции предикатов внутри объектов.
 
 .. _debugging_debug_mode:
 
-Compiling source files in debug mode
-------------------------------------
+Компиляция исходных файлов в режиме отладки
+-------------------------------------------
 
-Compilation of source files in debug mode is controlled by the
-:ref:`debug <flag_debug>` compiler flag. The default value for this flag,
-usually ``off``, is defined in the adapter files. Its default value may
-be changed at runtime by calling:
+Компиляция исходных файлов в режиме отладки контролируется флагом компилятора
+:ref:`debug <flag_debug>`. Значение по умолчанию для этого флага, как правило, ``off``, оно задается в файлах адаптера. Значение флага можно изменить во время выполнения программы при помощи вызова:
 
 .. code-block:: text
 
    | ?- set_logtalk_flag(debug, on).
 
-In alternative, if we want to compile only some source files in debug
-mode, we may instead write:
+Если надо скомпилировать только некоторые исходные файлы в режиме отладки, используется:
 
 .. code-block:: text
 
    | ?- logtalk_load([file1, file2, ...], [debug(on)]).
 
-The :ref:`predicates_logtalk_make_1` built-in predicate can also be used to
-recompile all loaded files (that were compiled without using explicit values
-for the :ref:`debug <flag_debug>` and :ref:`optimize <flag_optimize>` compiler
-flags in a ``logtalk_load/2`` call or in a :term:`loader file` file, if used)
-in debug mode:
+Встроенный предикат :ref:`predicates_logtalk_make_1` позволяет перекомпилировать все загруженные файлы (которые были скомпилированы без явного использования необходимых значений флагов компилятора :ref:`debug <flag_debug>` и :ref:`optimize <flag_optimize>` в вызове `logtalk_load/2` или в файле :term:`loader file`) в режиме отладки:
 
 .. code-block:: text
 
    | ?- logtalk_make(debug).
 
-With most :term:`backend Prolog compilers <backend Prolog compiler>`, the
-``{+d}`` top-level shortcut can also be used. After debugging, the files can
-be recompiled in normal or optimized mode using, respectively, the ``{+n}``
-or ``{+o}`` top-level shortcuts.
+В большинстве компиляторов Prolog (:term:`backend Prolog compilers <backend Prolog compiler>`) также можно использовать директиву командной строки интерпретатора ``{+d}``. После отладки файлы можно перекомпилировать в обычном или оптимизированном режиме, используя, соответственно, ``{+n}`` или ``{+o}``.
 
-The :ref:`clean <flag_clean>` compiler flag should be turned on whenever
-the :ref:`debug <flag_debug>` flag is turned on at runtime. This is necessary
-because debug code would not be generated for files previously compiled in
-normal mode if there are no changes to the source files.
+Во время выполнения программы флаг компилятора :ref:`clean <flag_clean>` должен быть включен, если включен флаг :ref:`debug <flag_debug>`. Теперь отладочный код будет сгенерирован по новой для файлов, ранее скомпилированных в обычном режиме, если в исходных файлах обнаружатся изменения.
 
-After loading the debugger, we may check (or enumerate by backtracking),
-all loaded entities compiled in debug mode as follows:
+После загрузки отладчика можно перечислить при помощи бектрекинга все загруженные объекты, скомпилированные в режиме отладки, следующим образом:
 
 .. code-block:: text
 
    | ?- debugger::debugging(Entity).
 
-To compile only a specific entity in debug mode, use the
-:ref:`directives_set_logtalk_flag_2` directive inside the entity.
+Чтобы скомпилировать только определенный объект в режиме отладки, используйте
+:ref:`directives_set_logtalk_flag_2` внутри этого объекта.
 
 .. _debugging_box_model:
 
-Procedure box model
--------------------
+Вычислительная модель отладчика
+-------------------------------
 
-Logtalk uses a *procedure box model* similar to those found on most
-Prolog systems. The traditional Prolog procedure box model defines
-four ports (*call*, *exit*, *redo*, and *fail*) for describing control
-flow when calling a predicate:
+Logtalk использует *модель вычисляющего ящика*, аналогичную тем, которые встречаются в большинстве системы Prolog. Традиционная вычислительная модель Prolog определяет четыре порта (*вызов*, *выход*, *повтор * и *сбой*), соответственно (*call*, *exit*, *redo*, and *fail*), для описания потока управления при вызове предиката:
 
 | ``call``
-|    predicate call
+|    вызов предиката
 | ``exit``
-|    success of a predicate call
+|    успешный вызов предиката
 | ``redo``
-|    backtracking into a predicate
+|    бэктрекинг к следующей фразе предиката
 | ``fail``
-|    failure of a predicate call
+|    неудача при вызове предиката
 
-Logtalk, as found on some recent Prolog systems, adds a port for
-dealing with exceptions thrown when calling a predicate:
+Logtalk использует найденный в некоторых современных системах Prolog порт для
+обработки исключений, возникающих при вызове предиката:
 
 | ``exception``
-|    predicate call throws an exception
+|    вызов предиката генерирует исключение
 
-In addition to the ports described above, Logtalk adds two more ports,
-``fact`` and ``rule``, which show the result of the unification of a
-goal with, respectively, a fact and a rule head:
+В дополнение к портам, описанным выше, Logtalk добавляет еще два порта,
+``fact`` и ``rule``, которые показывают результат унификации цели с, соответственно, фактом и заголовком правила:
 
 | ``fact``
-|    unification success between a goal and a fact
+|    успешная унификация цели и факта
 | ``rule``
-|    unification success between a goal and a rule head
+|    успешная унификация цели и заголовка правила
 
-Following Prolog tradition, the user may define for which ports the
-debugger should pause for user interaction by specifying a list of
-*leashed* ports. Например:
+Следуя традициям Prolog, пользователь может определить, для каких портов
+отладчик должен приостанавливать вычисления для взаимодействия с пользователем, указав список *leash*-портов. Например:
 
 .. code-block:: text
 
    | ?- debugger::leash([call, exit, fail]).
 
-Alternatively, the user may use an atom abbreviation for a pre-defined
-set of ports. Например:
+Пользователь также может указать идентификатор предварительно определенного
+набора портов. Например:
 
 .. code-block:: text
 
    | ?- debugger::leash(loose).
 
-The abbreviations defined in Logtalk are similar to those defined on
-some Prolog compilers:
+Идентификаторы, определенные в Logtalk, аналогичны тем, которые определены в
+некоторых компиляторах Prolog:
 
 | ``none``
 |    ``[]``
@@ -159,28 +126,21 @@ some Prolog compilers:
 | ``full``
 |    ``[fact, rule, call, exit, redo, fail, exception]``
 
-By default, the debugger pauses at every port for user interaction.
+По умолчанию отладчик приостанавливается на каждом порту для взаимодействия с пользователем.
 
-Defining spy points
--------------------
+Определение точек слежения
+--------------------------
 
-Logtalk spy points can be defined by simply stating which predicates
-should be spied, as in most Prolog debuggers, by stating which predicate
-clauses to spy given their source file line numbers, or by
-specifying the context for activating a spy point. In the case
-of line number spy points (also known as breakpoints), the line number
-must correspond to the first line of an entity clause. To simplify the
-definition of line number spy points, these are specified using the
-entity identifier instead of the file name (as all entities share a
-single namespace, an entity can only be defined in a single file).
+Точки слежки Logtalk задаются, указывая перечень предикатов, которые
+следует отслеживать, т.е. аналогично большинству отладчиков Prolog. Точки задаются номерами строк в файлах исходного кода предикатов, или указав контекст активации точки слежки. При использовании точек слежения по номером строки (точки останова), номера строки
+должны соответствовать первой строке предиката. Чтобы упростить определение точек отслеживания по номерам строки, точки останова задаются с использованием идентификатора объекта вместо имени файла (поскольку все объекты совместно используют одно пространство имен, объект может быть определен только в одном файле).
 
-Defining line number and predicate spy points
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Определение номеров строк и точек слежения за предикатами
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Line number and predicate spy points are specified using the debugger
-``spy/1`` predicate. The argument can be a breakpoint (expressed as a
-``Entity-Line`` pair), a predicate indicator (``Name/Arity``), or a
-list of spy points. Например:
+Номера строк и точки слежения за предикатом задаются при помощи предиката отладчика ``spy/1``. Аргументом выступает точка останова (выраженная в виде пары
+``Сущность-строка``), индикатор предиката (``Имя/Арность``) или
+список контрольных точек. Например:
 
 .. code-block:: text
 
@@ -199,39 +159,29 @@ list of spy points. Например:
    Spy points set.
    yes
 
-Line numbers and predicate spy points can be removed by using the
-debugger ``nospy/1`` predicate. The argument can be a spy point, a
-list of spy points, or a non-instantiated variable in which case all
-spy points will be removed. Например:
+Номера строк и контрольные точки предиката удаляются при помощи предиката
+отладчика `nospy/1`. Аргумент - это или точка слежения, или список точек слежения, или свободная переменная, в последнем случае все точки слежения будут удалены. Например:
 
 .. code-block:: text
 
    | ?- debugger::nospy(_).
 
-   All matching predicate spy points removed.
+   Все соответствующие точки слежения предиката удалены.
    yes
 
-In breakpoints, the line number must for the first line of a clause that we
-want to spy. But note that only some Prolog backends provide accurate source
-file term line numbers. Check the :doc:`../devtools/debugger` tool documentation
-for details.
+В точках останова номер строки должен соответствовать первой фразе предиката, за которым мы хотим следить. Но обратите внимание, что не все реализации Prolog предоставляют точный источник номеров строк термов в файле. В документации к инструменту :doc:`../devtools/debugger` есть подробная информация по этому вопросу.
 
-Defining context spy points
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Определение контекстных точек слежения
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-A context spy point is a tuple describing a message execution context and
-a goal:
+Контекстная точка слежения - это кортеж, описывающий контекст исполнения сообщения и цель:
 
 ::
 
    (Sender, This, Self, Goal)
 
-The debugger is evoked whenever the spy point goal and the specified
-execution context subsumes the goal currently being executed and its
-execution context. The user may establish any number of context spy points
-as necessary. For example, in order to call the debugger whenever a
-predicate defined on an object named ``foo`` is called we may define
-the following spy point:
+Отладчик вызывается всякий раз, когда цель точки отслеживания и указанный контекст выполнения совпадает с целью, выполняемой в данный момент, и контекстом ее
+выполнения. Пользователь может установить любое количество контекстных точек отслеживания по мере необходимости. Например, чтобы входить в отладчик всякий раз, когда вызывается предикат, определенный для объекта с именем ``foo``, можно определить следующую точку отслеживания:
 
 .. code-block:: text
 
@@ -240,8 +190,7 @@ the following spy point:
    Spy point set.
    yes
 
-For example, we can spy all calls to a ``foo/2`` predicate with a `bar`
-atom in the second argument by setting the condition:
+Можно шпионить за всеми вызовами предиката ``foo/2`` с атомом ``bar`` во втором аргументе, задав условие:
 
 .. code-block:: text
 
@@ -250,8 +199,7 @@ atom in the second argument by setting the condition:
    Spy point set.
    yes
 
-The debugger ``nospy/4`` predicate may be used to remove all matching
-spy points. For example, the call:
+Предикат отладчика ``nospy/4`` используется для удаления всех подходящих к параметрам запроса точек отслеживания. Например, вызов:
 
 .. code-block:: text
 
@@ -260,14 +208,14 @@ spy points. For example, the call:
    All matching context spy points removed.
    yes
 
-will remove all context spy points where the value of :term:`self` matches the
-atom ``foo``.
+удалит все контекстные точки ослеживания, где значение :term:`self` соответствует
+атому ``foo``.
 
-Removing all spy points
-~~~~~~~~~~~~~~~~~~~~~~~
+Удаление всех точек отслеживания
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-We may remove all line number, predicate, and context spy points by
-using the debugger ``nospyall/0`` predicate:
+Можно удалить все номера строк, предикаты и контекстные точки отслеживания,
+используя предикат отладчика `nospyall/0`.:
 
 .. code-block:: text
 
@@ -280,11 +228,11 @@ using the debugger ``nospyall/0`` predicate:
 
 .. _programming_trace:
 
-Tracing program execution
--------------------------
+Трассировка исполняющейся программы
+-----------------------------------
 
-Logtalk allows tracing of execution for all objects compiled in debug
-mode. To start the debugger in trace mode, write:
+Logtalk позволяет отслеживать исполнение для всех объектов, скомпилированных в
+режиме отладки. Чтобы запустить отладчик в режиме трассировки, напишите:
 
 .. code-block:: text
 
@@ -292,8 +240,7 @@ mode. To start the debugger in trace mode, write:
 
    yes
 
-Next, type the query to be debugged. For examples, using the ``family``
-example in the Logtalk distribution compiled for debugging:
+Затем введите запрос, который необходимо отладить. Для примеров, используя пример ``family`` в дистрибутиве Logtalk:
 
 .. code-block:: text
 
@@ -307,21 +254,10 @@ example in the Logtalk distribution compiled for debugging:
        *Exit: (2) ::female(morticia) ? 
        ...
 
-While tracing, the debugger will pause for user input at each leashed port,
-printing an informative message. Each trace line starts with the port,
-followed by the goal invocation number, followed by the goal. The invocation
-numbers are unique and allows us to correlate the ports used for a goal.
-In the output above, you can see for example that the goal ``::female(_1082)``
-succeeds with the answer ``::female(morticia)``. The debugger also provides
-determinism information by prefixing the ``exit`` port with a ``*`` character
-when a call succeeds with choice-points pending, thus indicating that there
-might be alternative solutions for the goal.
+Во время трассировки отладчик будет делать паузу для ввода данных пользователю на каждом порту, печатая информационное сообщение. Каждая строка трассировки начинается с названия порта, за ним следует номер вызова цели и сама цель. Номера вызовов уникальны и позволяют нам группировать порты, используемые для трассировки цели.
+В примере выше видно что цель ``::female(_1082)`` удовлетворяется с ответом ``::female(morticia)``. Отладчик также предоставляет информацию о потенциальном количестве решений (детерминизме), добавляя к порту `exit` символ `*`, когда вызов выполняется успешно, но есть еще потенциальные точками выбора, тем самым указывая, могут быть и альтернативные решения.
 
-Note that, when tracing, spy points will be ignored. Before the
-port number, when a spy point is set for the current clause or goal, the
-debugger will print a ``#`` character for line number spy points, a
-``+`` character for predicate spy points, and a ``*`` character for
-context spy points. Например:
+Обратите внимание, что в режиме трассировки точки отслеживания игнорируются. Если для текущего предложения или цели установлена точка отслеживания, отладчик напечатает символ `#` перед номером порта для шпионских точек, определенных номером  строки, и символ `+` для точек по имени предиката и символ `*` для контекстных точек. Например:
 
 .. code-block:: text
 
@@ -335,7 +271,7 @@ context spy points. Например:
         Call: (2) ::female(_1078) ? 
      +  Call: (3) female(_1078) ? 
 
-To stop tracing and turning off the debugger, write:
+Чтобы остановить трассировку и выключить отладчик напишите:
 
 .. code-block:: text
 
@@ -345,13 +281,10 @@ To stop tracing and turning off the debugger, write:
 
 .. _debugging_debug:
 
-Debugging using spy points
---------------------------
+Отладка с использованием точек отслеживания
+-------------------------------------------
 
-Tracing a program execution may generate large amounts of debugging
-data. Debugging using spy points allows the user to concentrate in
-specific points of the code. To start a debugging session using spy
-points, write:
+Трассировка выполнения программы генерирует большие объемы отладочных данных. Отладка с использованием контрольных точек позволяет пользователю сконцентрироваться на определенных точках кода. Чтобы начать сеанс отладки с использованием точек отслеживания, напишите:
 
 .. code-block:: text
 
@@ -359,15 +292,14 @@ points, write:
 
    yes
 
-For example, assuming the spy point we set in the previous section on
-the ``female/1`` predicate:
+Например, пусть установлена точка отслеживания для предиката ``female/1`` из предыдущего примера:
 
 .. code-block:: text
 
    | ?- addams::sister(Sister, Sibling).
      +  Call: (3) female(_1078) ? 
 
-To stop the debugger, write:
+Чтобы остановить отладчик, напишите:
 
 ::
 
@@ -375,112 +307,104 @@ To stop the debugger, write:
 
    yes
 
-Note that stopping the debugger does not remove any defined spy points.
+Обратите внимание, что остановка отладчика не удаляет точки отслеживания.
 
 .. _debugging_commands:
 
-Debugging commands
-------------------
+Команды отладчика
+-----------------
 
-The debugger pauses at leashed ports when tracing or when finding a spy
-point for user interaction. The commands available are as follows:
+Отладчик приостанавливает работу на привязанных портах в режиме трассировки или при достижении точки отслеживания (включая контекстные) и переходит в режим взаимодействия с пользователем. Доступны следующие команды:
 
 ``c`` — creep
-   go on; you may use the spacebar, return, or enter keys in alternative
-``l`` — leap
-   continues execution until the next spy point is found
+   продолжить; в качестве альтернативы можно использовать клавиши пробела, Return и Enter
+`l` — leap
+   продолжает выполнение до тех пор, пока не будет найдена следующая точка слежения
 ``s`` — skip
-   skips debugging for the current goal; valid at call, redo, and
-   unification ports
+   пропускает отладку для текущей цели; действителен на портах call, redo и 
+   портах унификации
 ``q`` — quasi-skip
-   skips debugging until returning to the current goal or reaching a spy
-   point; valid at call and redo ports
+   пропускает отладку до тех пор, пока не вернется к текущей цели или не достигнет точку слежения
+   ; действителен в портах call и redo
 ``r`` — retry
-   retries the current goal but side-effects are not undone; valid at
-   the fail port
+   перезапускает текущую цель, побочные эффекты при этом не отменяются; действителен на
+   порту fail
 ``j`` — jump
-   reads invocation number and continues execution until a port is
-   reached for that number
-``z`` — zap
-   reads either a port name and continues execution until that port is
-   reached or a negated port name and continues execution until a port
-   other than the negated port is reached
+   считывает номер вызова и продолжает выполнение до тех пор, пока порт не будет
+   достигнут этот номер
+`z` — zap
+   считывает либо имя порта, и продолжает выполнение до тех пор, пока этот порт не будет
+   достигнут, либо считывает имя игнорируемого порта и продолжает выполнение до тех пор, пока какой-либо порт,
+   отличный от заданного, не будет достигнут
 ``i`` — ignore
-   ignores goal, assumes that it succeeded; valid at call and redo ports
+   игнорирует цель, предполагая, что она выполнена успешно; действительна на портах call и redo
 ``f`` — fail
-   forces backtracking; may also be used to convert an exception into a
-   failure
+   принудительный бэктрекинг; также может использоваться для преобразования исключения в
+   неудачу
 ``n`` — nodebug
-   turns off debugging
-``@`` — command; ``!`` can be used in alternative
-   reads and executes a query
+   отключает отладку
+``@`` — command; ``!`` можно использовать как альтернативу
+   считывает и запускает запрос
 ``b`` — break
-   suspends execution and starts new interpreter; type ``end_of_file``
-   to terminate
+   приостанавливает выполнение и запускает новый интерпретатор; терм `end_of_file`, введенный в командной строке,
+   останавливает интерпретатор
 ``a`` — abort
-   returns to top level interpreter
+   вернутся в основной интерпретатор
 ``Q`` — quit
-   quits Logtalk
+   выходит их Logtalk
 ``p`` — print
-   writes current goal using the ``print/1`` predicate if available
+   печатает текущую цель, используя предикат ``print/1``, если таковой имеется
 ``d`` — display
-   writes current goal without using operator notation
+   печатает текущую цель без использования операторной нотации
 ``w`` — write
-   writes current goal quoting atoms if necessary
+   печатает текущую цель, при необходимости обрамляя кавычками атомы
 ``$`` — dollar
-   outputs the compiled form of the current goal (for low-level debugging)
-``x`` — context
-   prints execution context
+   выводит скомпилированную форму текущей цели (для низкоуровневой отладки)
+``x`` — contextтg
+   пеатает контекст исполнения
 ``.`` — file
-   prints file, entity, predicate, and line number information at an
-   unification port
+   выводит информацию о файле, сущности (объекте), предикате и номере строки на
+   порту унификации
 ``e`` — exception
-   prints exception term thrown by the current goal
+   выводит данные исключения, сгенерированное текущей целью
 ``=`` — debugging
-   prints debugging information
+   печатает информацию отладчика
 ``<`` — write depth
-   sets the write term depth (set to ``0`` to reset)
+   устанавливат глубину представления терма при распечатке (``0`` устанавливает значение по умолчанию)
 ``*`` — add
-   adds a context spy point for the current goal
+   устанавливает контектную точку отслеживания на текущую цель
 ``/`` — remove
-   removes a context spy point for the current goal
+   удаляет контекстную точку отслеживания с текущей цели
 ``+`` — add
-   adds a predicate spy point for the current goal
+   устанавливает точку слежения за предикатом на текущую цель
 ``-`` — remove
-   removes a predicate spy point for the current goal
+   удаляет точку слежения за предикатом для текущей цели
 ``#`` — add
-   adds a line number spy point for the current clause
+   устанавливат точку слежения, определенную номером строки, для текущей фразы
 ``|`` — remove
-   removes a line number spy point for the current clause
+   удаляет точку слежения, определенную номером строки, для текущей фразы
 ``h`` — condensed help
-   prints list of command options
+   печатает список команд отладчика
 ``?`` — extended help
-   prints list of command options
+   выводит список команд отладчика с пояснениями
 
 .. _debugging_term_write:
 
-Customizing term writing
-------------------------
+Настройка печати термов
+-----------------------
 
-Debugging complex applications often requires customizing term writing.
-The available options are limiting the writing depth of large compound
-terms and defining the traditional ``portray/1`` to define how a term
-should be printed when using the ``p`` command at a leashed port.
+Отладка сложных приложений часто требует настройки отображения термов.
+Доступные настройки ограничивают глубину печати больших составных
+термов и задают параметры традиционному предикату ``portray/1``, указывая как должен быть распечатан терм при использовании команды ``p`` на привязанном порту.
 
 .. _debugging_term_write_depth:
 
-Term write depth
-~~~~~~~~~~~~~~~~
+Глубина терма при распечатке
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The terms written by the debugger can be quite large depending on the
-application being debugged. As described in the previous section, the
-debugger accepts the ``<`` command to set the maximum write term depth
-for compound terms. This commmand requires that the used
-:term:`backend Prolog compiler` supports the non-standard but common
-``max_depth/1`` option for the ``write_term/3`` predicate. When the
-compound term being written is deeply nested, the sub-terms are only
-written up to the specified depth with the omitted sub-terms replaced
-usually by ``...``. Например:
+Термы, распечатываемые отладчиком, могут быть довольно большими. Как описано в предыдущем разделе, отладчик имеет команду ``<`` для установки максимальной глубины печати составных терминов. Эта команда требует, чтобы используемый
+:term:`backend Prolog compiler` поддерживал нестандартный, но распространенный
+параметр ``max_depth/1`` для предиката `write_term/3`. Когда выводимый на экран составной терм глубоко вложен, вложенные термины печатаются только до указанной глубины, а пропущенные вложенные термины обычно заменяются на `...". Например:
 
 ::
 
@@ -489,27 +413,21 @@ usually by ``...``. Например:
    [0,1,2,3,4|...]
    yes
 
-The default maximum depth depends on the backend. To print compound
-terms without a depth limit, set it explicitly to zero if necessary.
+Максимальная глубина по умолчанию зависит от Prolog-интерпретатора. Чтобы печатать составные термы без ограничения глубины, установите глубину равной нулю.
 
 .. _debugging_custom_term_writing:
 
-Custom term writing
-~~~~~~~~~~~~~~~~~~~
+Настройка пользовательского режима печати термов
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The implicit use of the traditional ``print/1`` predicate (using the
-``p`` command) and the ``portray/1`` user-defined hook predicate
-requires backend Prolog compiler support for these predicates. See
-the documentation of the backend you intend to use for details. As
-an example, assuming the following ``portray/1`` definition:
+Неявное использование традиционного предиката ``print/1`` (команда ``p`` отладчика) или предиката ``portray/1``, определяемого пользователем, требуют поддержки этих предикатов используемым компилятором Prolog. Ознакомтесь с документацией по используемому интерпретатору. Пусть задано в качестве примера следующее определение ``portray/1``:
 
 ::
 
    portray(e(V1,V2)) :-
        format('~q ---> ~q~n', [V1,V2]).
 
-Calling the ``print/1`` predicate with e.g. a ``e(x1,x7)`` compound term
-argument will output:
+Вызов предикат ``print/1`` с параметром ``e(x1,x7)`` (сложный терм) в качестве аргумента выдаст:
 
 .. code-block:: text
 
@@ -520,17 +438,16 @@ argument will output:
 
 .. _debugging_context:
 
-Context-switching calls
------------------------
+Вызовы с переключением контекста
+--------------------------------
 
-Logtalk provides a control construct, :ref:`control_context_switch_2`,
-which allows the execution of a query within the context of an object.
-Common debugging uses include checking an object local predicates (e.g.
-predicates representing internal dynamic state) and sending a message
-from within an object. This control construct may also be used to write
-unit tests.
+Logtalk предоставляет управляющую конструкцию :ref:`control_context_switch_2`,
+которая позволяет выполнять запрос в контексте объекта.
+Обычная отладка включает проверку локальных предикатов объекта (например, предикатов, представляющих внутреннее динамическое состояние) и отправку сообщения
+изнутри объекта. Эта управляющая конструкция также может быть использована для написания
+тестов модулей.
 
-Consider the following toy example:
+Рассмотрим следующий игрушечный пример:
 
 ::
 
@@ -544,7 +461,7 @@ Consider the following toy example:
 
    :- end_object.
 
-Something is wrong when we try the object public predicate, ``a/1``:
+Что-то не так, когда пытаемся использовать ``public`` предикат объекта ``a/1``:
 
 .. code-block:: text
 
@@ -552,9 +469,7 @@ Something is wrong when we try the object public predicate, ``a/1``:
 
    no
 
-For helping diagnosing the problem, instead of compiling the object in
-debug mode and doing a *trace* of the query to check the clauses for the
-non-public predicates, we can instead simply type:
+Чтобы продиагностировать проблему, вместо компиляции объекта в режиме отладки и выполнения трассировки запроса для проверки предложений на наличие не-``public``-предикатов, мы можем вместо этого просто ввести:
 
 .. code-block:: text
 
@@ -563,9 +478,7 @@ non-public predicates, we can instead simply type:
    C = 3
    yes
 
-The ``(<<)/2`` control construct works by switching the execution context
-to the object in the first argument and then compiling and executing the
-second argument within that context:
+Управляющая структура ``(<<)/2`` переключает контекст исполнения на объект в левом аргументе, затем компилирует и запускает правый аргумент в этом контексте:
 
 .. code-block:: text
 
@@ -577,60 +490,47 @@ second argument within that context:
 
    yes
 
-As exemplified above, the ``(<<)/2`` control construct allows you to call
-an object local and private predicates. However, it is important to
-stress that we are not bypassing or defeating an object predicate scope
-directives. The calls take place within the context of the specified
-object, not within the context of the object making the ``(<<)/2`` call.
-Thus, the ``(<<)/2`` control construct implements a form of
-*execution-context switching*.
+Как показано на примере выше, управляющая конструкция ``(<<)/2`` позволяет вызывать
+локальные и ``private``-предикаты объекта. Однако важно подчеркнуть, что мы не обходим или не бореся с директивами области видимости предиката объекта. Вызовы выполняются в контексте указанного объекта, а не в контексте объекта, выполняющего вызов ``(<<)/2``.
+Таким образом, управляющая конструкция ``(<<)/2`` реализует форму
+*переключение контекста исполнения*.
 
-The availability of the ``(<<)/2`` control construct is controlled by the
-:ref:`context_switching_calls <flag_context_switching_calls>` compiler
-flag (its default value is defined in the adapter files of the backend
-Prolog compilers).
+Наличие ``(<<)/2`` управляется флагом компилятора :ref:`context_switching_calls <flag_context_switching_calls>` (его значение по умолчанию определено в файлах адаптера интерпретатора Prolog).
 
 .. _debugging_messages:
 
-Debugging messages
-------------------
+Отладочные сообщения
+--------------------
 
-Calls to the :ref:`logtalk::print_message/3 <methods_print_message_3>`
-predicate where the message kind is either ``debug`` or ``debug(Group)`` are
-only printed, by default, when the :ref:`debug <flag_debug>` flag is turned
-on. Moreover, these calls are suppressed by the compiler when the
-:ref:`optimize <flag_optimize>` flag is turned on. Note that actual printing
-of debug messages does not require compiling the code in debug mode, only
-turning on the ``debug`` flag.
+Вызов предиката :ref:`logtalk::print_message/3 <methods_print_message_3>`, в котором указывается тип сообщения - `debug` либо `debug(Group)`, по умолчанию производит печать только тогда, когда флаг :ref:`debug <flag_debug>` включен. Более того, эти вызовы подавляются компилятором, когда
+включен флаг :ref:`optimize <flag_optimize>`. Обратите внимание, что печать отладочных сообщений не требует компиляции кода в режиме отладки, достаточно включить флаг ``debug``.
 
-Meta-messages
-~~~~~~~~~~~~~
+Мета-сообщения
+~~~~~~~~~~~~~~
 
-To avoid having to define :ref:`methods_message_tokens_2` grammar rules
-for translating each and every debug message, Logtalk provides default
-tokenization for five *meta-messages* that cover the most common cases:
+Чтобы избежать необходимость определять грамматические правила :ref:`methods_message_tokens_2` для перевода каждого сообщения отладки, Logtalk предоставляет токенизацию по умолчанию для пяти *мета-сообщений*, которые представляют собой наиболее распространенные случаи:
 
 ``@Message``
-   By default, the message is printed as passed to the ``write/1``
-   predicate followed by a newline.
+   По умолчанию сообщение печатается в том виде, в каком оно было передано в предикат ``write/1``,
+   за которым следует перевод строки.
 ``Key-Value``
-   By default, the message is printed as ``Key: Value`` followed by a
-   newline. The key is printed as passed to the ``write/1`` predicate
-   while the value is printed as passed to the ``writeq/1`` predicate.
+   По умолчанию сообщение печатается как ``Ключ: Значение``, за которым следует
+   новая строка. Ключ печатается так, как печатает предикат ``write/1``,
+   а значение печатается по правилам предиката ``writeq/1``.
 ``Format+Arguments``
-   By default, the message is printed as passed to the ``format/2``
-   predicate.
+   По умолчанию сообщение печатается в том виде, в каком оно было передано в предикат ``format/2``.
+    
 ``List``
-   By default, the list items are printed indented one per line. Функция
-   items are preceded by a dash and can be ``@Message``, ``Key-Value``,
-   or ``Format+Arguments`` messages. If that is not the case, the item
-   is printed as passed to the ``writeq/1`` predicate.
+   По умолчанию элементы списка печатаются с отступом по одному в строке.  
+   Перед элементами ставится тире, и они могут быть отображены согласно сообщениям `@Message`, `Ключ-значение`
+   или ``Format+Arguments``. Если это не так, то элемент
+   печатается по правилам предиката ``writeq/1``.
 ``Title::List``
-   By default, the title is printed followed by a newline and the
-   indented list items, one per line. The items are printed as in
-   the ``List`` meta message.
+   По умолчанию печатается заголовок, за которым следует новая строка и
+   элементы списка с отступом, по одному на строку. Элементы печатаются так, как в
+   мета-сообщении ``List``.
 
-Some simple examples of using these meta-messages:
+Несколько простых примеров использования мета-сообщений:
 
 .. code-block:: text
 
@@ -665,10 +565,8 @@ Some simple examples of using these meta-messages:
    >>> - marvin
    yes
 
-The ``>>>`` prefix is the default message prefix for ``debug`` messages.
-It can be redefined using the
-:ref:`logtalk::message_prefix_stream/4 <methods_message_prefix_stream_4>`
-hook predicate. Например:
+Префикс ``>>>`` - это префикс сообщения по умолчанию для ``debug``-сообщений.
+Его можно переопределить с помощью hook-предиката :ref:`logtalk::message_prefix_stream/4 <methods_message_prefix_stream_4>`. Например:
 
 ::
 
@@ -677,80 +575,57 @@ hook predicate. Например:
 
    logtalk::message_prefix_stream(debug, core, '(dbg) ', user_error).
 
-Selective printing of debug messages
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Выборочная печать отладочных сообщений
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-By default, all debug messages are either printed or skipped, depending on the
-:ref:`debug <flag_debug>` and :ref:`optimize <flag_optimize>` flags. When the
-code is not compiled in optimal mode, the :doc:`../devtools/debug_messages`
-tool allows selectively enabling of debug messages per :term:`component` and
-per debug group. For example, to enable all ``debug`` and ``debug(Group)``
-messages for the ``parser`` component:
+По умолчанию все сообщения отладки либо печатаются, либо пропускаются, в зависимости от флагов :ref:`debug <flag_debug>` и :ref:`optimize <flag_optimize>`. Когда код не компилируется в оптимальном режиме, инструмент :doc:``../devtools/debug_messages`` позволяет выборочно включать отладочные сообщения для каждого :term:``component`` и для каждой группы отладки. Например, чтобы включить все ``debug``- и ``debug(Group)``-сообщения для компонента ``parser``:
 
 .. code-block:: text
 
-   % upon loading the tool, all messages are disabled by default: 
+   % при загрузке инструмента все сообщения по умолчанию отключены: 
    | ?- logtalk_load(debug_messages(loader)).
    ...
 
-   % enable both debug and debug(_) messages:
+   % включить как debug-, так и debug(_)-сообщения:
    | ?- debug_messages::enable(parser).
    yes
 
-To enable only ``debug(tokenization)`` messages for the ``parser`` component:
+Чтобы включить только сообщения ``debug(tokenization)`` для компонента ``parser``:
 
 .. code-block:: text
 
-   % first disable any and all enabled messages:
+   % сначала отключить все сообщения:
    | ?- debug_messages::disable(parser).
    yes
 
-   % enable only debug(tokenization) messages:
+   % включить только сообщения debug(tokenization):
    | ?- debug_messages::enable(parser, tokenization).
    yes
 
-See the tool documentation for more details. 
+Более подробную информацию смотрите в документации по инструменту. 
 
 .. _debugging_hooks:
 
-Using the term-expansion mechanism for debugging
-------------------------------------------------
+Использование механизма расширения терма для отладки
+------------------------------------------------------
 
-Debugging messages only output information by default. These messages can,
-however, be intercepted to perform other actions. An alternative is to use
-instead the :ref:`term-expansion mechanism <expansion_expansion>` for
-conditional compilation of debugging goals. For example, the
-:doc:`../libraries/hook_objects` library provides a
-:ref:`print_goal_hook <apis:print_goal_hook/0>` object that simplifies
-printing entity goals before or after calling them by simply prefixing them
-with an operator. See the library and hook object documentation for details.
-You can also define your own specialized hook objects for custom debugging
-tasks.
+Отладочные сообщения выводят только информацию, заданную настройками по умолчанию. Однако эти сообщения могут быть перехвачены для выполнения других действий. Альтернативой является использование вместо этого механизма расширения терма :ref:`` <expansion_expansion>`` для условной компиляции целей отладки. Например :doc:`../libraries/hook_objects` предоставляет объект
+:ref:`print_goal_hook <apis:print_goal_hook/0>`, упрощающий распечатку целлей до и после их вызова путем простого добавления префикса некоторым оператором. Подробности в документации по библиотеке и объекту hook.
+Вы также можете определить свои собственные специализированные объекты hook для пользовательских задач отладки.
 
 .. _debugging_ports_profiling:
 
-Ports profiling
----------------
+Профилирование портов
+---------------------
 
-The Logtalk distribution includes a :doc:`../devtools/ports_profiler` tool
-based on the same procedure box model described above. This tool is
-specially useful for debugging performance issues (e.g. due to lack of
-determinism or unexpected backtracking). See the tool documentation for
-details. 
+Дистрибутив Logtalk включает в себя инструмент :doc:`../devtools/ports_profiler`, основанный на той же модели процедурного ящика, описанной выше. Этот инструмент особенно полезен для отладки проблем с производительностью (например, из-за отсутствия детерминизма или неожиданного бектрекинга). Ищите описание в документации по инструменту. 
 
 .. _debugging_events:
 
-Debug and trace events
-----------------------
+События отладки и отслеживания
+------------------------------
 
-The debugging API defines two multifile predicates,
-:ref:`logtalk::trace_event/2 <apis:logtalk/0::trace_event/2>` and
-:ref:`logtalk::debug_handler/2 <apis:logtalk/0::debug_handler/2>` for handiling
-trace and debug events. It also provides a
-:ref:`logtalk::debug_handler_provider/1 <apis:logtalk/0::debug_handler_provider/1>`
-multifile predicate that allows an object (or a category) to declare itself
-as a debug handler provider. The Logtalk ``debugger`` and  ``ports_profiler``
-tools are regular applications thar are implemented using this API, which
-can also be used to implement alternative or new debugging related tools.
-See the API documentation for details and the source code of the ``debugger``
-and  ``ports_profiler`` tools for usage examples.
+Интерфейс прикладного программирования (API) определяет два многофайловых предиката,
+:ref:`logtalk::trace_event/2 <apis:logtalk/0::trace_event/2>` и
+:ref:`logtalk::debug_handler/2 <apis:logtalk/0::debug_handler/2>` для обработки событий трассировки и отладки. Он также включает мультифайловй предикат :ref:`logtalk::debug_handler_provider/1 <apis:logtalk/0::debug_handler_provider/1>`, позволяющий объекту (или категории) декларировать себя в качестве обработчика событий отладчика. Инструменты Logtalk ``debugger`` и ``ports_profiler`` являются обычными приложениями, которые реализуются с использованием этого API. Он также может быть использован для реализации альтернативных или новых инструментов отладки.
+Ознакомьтесь с документацией API, почитайте исходный код инструментов ``debugger`` и ``ports_profiler``.

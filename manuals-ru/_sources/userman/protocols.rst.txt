@@ -190,8 +190,8 @@ Protocol documentation
 ~~~~~~~~~~~~~~~~~~~~~~
 
 A protocol can be documented with arbitrary user-defined information
-by using the :ref:`directives_info_1` entity directive. See the
-:ref:`documenting_documenting` section for details.
+by using the :ref:`directives_info_1` entity directive. Смотрите раздел
+:ref:`documenting_documenting` для получения подробной информации.
 
 .. _protocols_include:
 
@@ -199,9 +199,8 @@ Loading files into a protocol
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The :ref:`directives_include_1` directive
-can be used to load the contents of a file into a protocol. See the
-:ref:`objects_objects` section for an example of using this
-directive.
+can be used to load the contents of a file into a protocol. Смотрите раздел :ref:`objects_objects`, где приведен пример использования этой
+директивы.
 
 .. _protocols_relationships:
 
@@ -219,7 +218,7 @@ pairs of protocols so that the first one extends the second:
 
    | ?- extends_protocol(Protocol1, Protocol2).
 
-or, if we also want to know the extension scope:
+или, если нужно также пространство имен:
 
 .. code-block:: text
 
@@ -268,17 +267,17 @@ The following protocol properties are supported:
    The protocol is static
 ``dynamic``
    The protocol is dynamic (and thus can be abolished in runtime by
-   calling the :ref:`predicates_abolish_category_1` built-in predicate)
-``built_in``
+   вызова встроенного предиката :ref:`predicates_abolish_category_1`)
+``built-in``
    The protocol is a built-in protocol (and thus always available)
 ``source_data``
    Source data available for the protocol
 ``file(Path)``
    Absolute path of the source file defining the protocol (if
-   applicable)
+   такой есть)
 ``file(Basename, Directory)``
    Basename and directory of the source file defining the protocol (if
-   applicable); ``Directory`` always ends with a ``/``
+   такой имеется); ``Directory`` всегда заканчивается ``/``
 ``lines(BeginLine, EndLine)``
    Source file begin and end lines of the protocol definition (if
    applicable)
@@ -292,8 +291,8 @@ The following protocol properties are supported:
    List of :ref:`properties <grammar_entity_properties>` for a predicate declared by the protocol
 ``alias(Predicate, Properties)``
    List of :ref:`properties <grammar_entity_properties>` for a :term:`predicate alias` declared by the protocol
-   (the properties include ``for(Original)``, ``from(Entity)``,
-   ``non_terminal(NonTerminal)``, and ``line_count(Line)`` with ``Line``
+   (список свойств включает ``for(Original)``, ``from(Entity)``,
+   ``non_terminal(NonTerminal)`` и ``line_count(Line)``, при этом ``Line``
    being the begin line of the alias directive)
 
 Some of the properties such as line numbers are only available when the
@@ -344,7 +343,7 @@ prefix the protocol's name with the corresponding keyword. Пример:
        ...
    :- end_object.
 
-Omitting the scope keyword is equivalent to writing:
+Пропуск этого ключевого слова эквивалентно записи:
 
 ::
 

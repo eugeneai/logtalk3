@@ -18,41 +18,26 @@
 
 .. _documenting_documenting:
 
-Documenting
-===========
+Документирование
+================
 
-Assuming that the :ref:`source_data <flag_source_data>` flag is turned on, the
-compiler saves all relevant documenting information collected when compiling
-a source file. The provided :doc:`../devtools/lgtdoc` tool can access this
-information by using the :ref:`reflection <reflection_reflection>` support
-and generate a documentation file for each compiled entity (object, protocol,
-or category) in XML format. Contents of the XML file include the entity name,
-type, and compilation mode (static or dynamic), the entity relations with
-other entities, and a description of any declared predicates (name,
-compilation mode, scope, ...). The XML documentation files can be enriched
-with arbitrary user-defined information, either about an entity or about its
-predicates, by using the two directives described in the next section. The
-``lgtdoc`` tool includes POSIX and Windows scripts for converting the XML
-documentation files to several final formats (such as HTML and PDF).
+Если флаг :ref:`source_data <flag_source_data>` включен, то
+компилятор сохраняет всю соответствующую документирующую информацию, собранную при компиляции исходного файла. Программа :doc:`../devtools/lgtdoc` организует доступ к этой информации, используя ref:`reflection <reflection_reflection>`, она генерирует файл документации для каждой скомпилированной сущности (объекта, протокола или категории) в формате XML. Содержимое XML-файла включает имя объекта, тип и режим компиляции (статический или динамический), отношения объекта с другими объектами и описание любых объявленных предикатов (имя, режим компиляции, область видимости, ...). Файлы документации XML можно дополнить произвольной пользовательской информацией, о самой сущности, ее предикатах при помощи двух директив, описанных в следующем разделе. Программа `lgtdoc` включает в себя сценарии POSIX и Windows для преобразования
+файлов документации XML в несколько конечных форматов (таких как HTML и PDF).
 
 .. _documenting_directives:
 
-Documenting directives
-----------------------
+Директивы документирования
+--------------------------
 
-Logtalk supports two documentation directives for providing arbitrary
-user-defined information about an entity or a predicate. These two
-directives complement other directives that also provide important
-documentation information such as the :ref:`directives_mode_2` and
-:ref:`directives_meta_predicate_1` directives.
+Logtalk предоставляет две директивы документирования для удобного предоставления произвольной информации о сущности или предикате. Эти директивы дополняют другие директивы, они позволяют задавать дополнительную информацию в документации: :ref:'directives_mode_2' и :ref:'directives_meta_predicate_1'.
 
 .. _documenting_entity:
 
-Entity directives
-~~~~~~~~~~~~~~~~~
+Директивы для сущностей
+~~~~~~~~~~~~~~~~~~~~~~~
 
-Arbitrary user-defined entity information can be represented using the
-:ref:`directives_info_1` directive:
+Произвольная информация для пользователя о сущности представляется при помощи директивы :ref:`directives_info_1`:
 
 ::
 
@@ -62,35 +47,34 @@ Arbitrary user-defined entity information can be represented using the
        ...
    ]).
 
-In this pattern, keys should be atoms and values should be bound terms.
-The following keys are predefined and may be processed specially by
-Logtalk tools:
+В этом шаблоне ключи должны быть атомами, а значения - основными терминами.
+Определены следующие ключи, распознаваемые инструментами Logtalk:
 
 ``comment``
-   Comment describing the entity purpose (an atom). As a style guideline,
-   don't use overly long comments. If you need to provide additional
-   details, use the ``remarks`` key.
+   Комментарий, описывающий назначение сущности (атом). В качестве руководства по стилю оформления,
+   не используйте слишком длинные комментарии. Если вам нужно предоставить дополнительные
+   подробности, используйте ключ ``remarks``.
 ``author``
-   Entity author(s) (an atom or a compound term ``{entity}`` where
-   ``entity`` is the name of an XML entity in a user defined
-   ``custom.ent`` file).
+   Автор(ы) сущности (атом или составной термин ``{entity}``, где
+   ''entity'' — имя XML-сущности в определяемом пользователем
+   файле ``custom.ent``).
 ``version``
-   Version number (a ``Major:Minor:Patch`` compound term) Following the
-   `Semantic Versioning guidelines <https://semver.org>`_ is strongly advised.
+   Номер версии (составной терм ``Major:Minor:Patch``), следование
+   `Рекомендации по семантическому управлению версиями <https://semver.org>`_ настоятельно рекомендуется.
 ``date``
-   Date of last modification in ISO 8601 standard format (``Year-Month-Day``
-   where ``Year``, ``Month``, and ``Day`` are integers).
+   Дата последнего изменения в стандартном формате ISO 8601 (``Year-Month-Day``,
+   где ``Year``, ``Month`` и ``Day`` - целые числа).
 ``parameters``
-   Parameter names and descriptions for parametric entities (a list of
-   ``Name-Description`` pairs where both names and descriptions are atoms).
+   Имена параметров и описания параметризованных объектов (список
+   пар ``Name-Description``, где и имя и описание - атомы).
 ``parnames``
-   Parameter names for parametric entities (a list of atoms; a simpler
-   version of the previous key, used when parameter descriptions are
-   deemed unnecessary).
+   Имена параметров для параметризованных объектов (список атомов; более простой
+   версия предыдущего ключа, используемого при описаниях параметров
+   считается ненужным).
 ``copyright``
-   Copyright notice for the entity source code (an atom or a compound
-   term ``{entity}`` where ``entity`` is the name of an XML entity
-   defined in a user defined ``custom.ent`` file).
+   Уведомление об авторских правах на исходный код объекта (атом или сложный
+   терм ``{entity}``, где ``entity`` - название сущности XML,
+   определенный в пользовательском файле ``custom.ent``).
 ``license``
    License terms for the entity source code; usually, just the license
    name (an atom or a compound term ``{entity}`` where ``entity`` is the
@@ -138,8 +122,7 @@ the :ref:`directives_info_2` directive:
 
 The first argument can also a grammar rule non-terminal indicator,
 ``Name//Arity``. Keys should be atoms and values should be bound terms.
-The following keys are predefined and may be processed specially by
-Logtalk tools:
+Определены следующие ключи, распознаваемые инструментами Logtalk:
 
 ``comment``
    Comment describing the predicate (or non-terminal) purpose (an atom).
@@ -168,7 +151,7 @@ Logtalk tools:
 ``examples``
    List of typical predicate call examples using the format
    ``Description-Goal-Bindings``. The description must be an atom
-   with the goal sharing variables with the bindings. Функция
+   with the goal sharing variables with the bindings.  
    variable bindings term uses the format ``{Variable = Term, ...}``.
    When there are no variable bindings, the success or failure of
    the predicate call should be represented by the terms ``{yes}``

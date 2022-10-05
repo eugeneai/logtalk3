@@ -18,53 +18,20 @@
 
 .. _declarative_declarative:
 
-Declarative object-oriented programming
-=======================================
+Декларативное объектно-ориентированное программирование
+=======================================================
 
-Logtalk is a *declarative object-oriented logic programming language*. This means
-that Logtalk shares key concepts with other object-oriented programming languages
-but abstracts and reinterprets these concepts in the context of declarative logic
-programming.
+Logtalk - это *декларативный объектно-ориентированный логический язык программирования*. Это означает, что Logtalk разделяет ключевые концепции с другими объектно-ориентированными языками программирования, но абстрагирует и переосмысливает эти концепции в контексте декларативного логического программирования.
 
-The key concepts in *declarative* object-oriented programming are *encapsulation*
-and *reuse patterns*. Notably, the concept of *mutable state*, which is an *imperative*
-concept, is not a significant concept in *declarative* object-oriented programming.
-Declarative object-oriented programming concepts can be materialized in both
-logic and functional languages. In this section, we focus only in declarative
-object-oriented logic programming.
+Ключевыми понятиями в *декларативном* объектно-ориентированном программировании являются *инкапсуляция* и *шаблоны повторного использования*. Примечательно, что концепция *изменяемого состояния*, которая относится к *императивному* программированию, не является значимой концепцией в *декларативном* объектно-ориентированном программировании.
+Декларативные концепции объектно-ориентированного программирования могут быть материализованы как в логических, так и в функциональных языках. В этом разделе рассмотрим только на декларативном
+объектно-ориентированном логическом программировании.
 
-The first critical generalization of object-oriented programming concepts is the
-concept of object itself. What an object encapsulates depends on the *base programming
-paradigm* where we apply object-oriented programming concepts. When these concepts
-are applied to an imperative language, where mutable state and destructive assignment
-are central, objects naturally encapsulate and abstract mutable state, providing
-disciplined access and modification. When these concepts are applied to a declarative
-logic language such as Prolog, objects naturally encapsulate predicates. Therefore, an
-object can be seen as a *theory*, expressed by a set of related predicates. Theories
-are usually static and thus Logtalk objects are static by default. This contrasts with
-imperative object-oriented languages where usually classes are static and objects are
-dynamic. This view of an object as a set of predicates also forgo a distinction
-between *data* and *procedures* that is central to imperative object-oriented
-languages but moot in declarative, homoiconic logic languages.
+Первым критическим обобщением концепций объектно-ориентированного программирования является концепция объекта как такового. То, что инкапсулирует объект, зависит от *базовой парадигмы программирования*, относимой к объектно-ориентированному программированию. Когда эти концепции применяются к императивному языку, где центральное место занимают изменяемое состояние и деструктивное присвоение, объекты естественным образом инкапсулируют и абстрагируют изменяемое состояние, обеспечивая
+упорядоченный доступ и модификацию. Когда эти концепции применяются к языку декларативной логики, такому как Prolog, объекты естественным образом инкапсулируют предикаты. Следовательно, объект можно рассматривать как *теорию*, выраженную набором связанных предикатов. Теории обычно статичны, и поэтому объекты Logtalk по умолчанию статичны. Это контрастирует с императивными объектно-ориентированными языками, где обычно классы статичны, а объекты динамичны. Этот взгляд на объект как на набор предикатов также исключает различие
+между *данными * и *процедурами* (методами, операциями), которое является центральным для императивных объектно-ориентированных языков, но спорным в декларативных, гомоиконических логических языках.
 
-The second critical generalization concerns the relation between objects and other
-entities such as protocols (interfaces) and ancestor objects. The idea is that entity
-relations define *reuse patterns* and the *roles* played by the participating entities.
-A common reuse pattern is *inheritance*. In this case, an entity inherits, and thus
-reuses, resources from an ancestor entity. In a reuse pattern, each participating entity
-plays a specific *role*. The same entity, however, can play multiple roles
-depending on its relations with other entities. For example, an object can play
-the role of a class for its instances, the role of a subclass for its superclasses,
-and the role of an instance for its metaclass. Another common reuse pattern is
-*protocol implementation*. In this case, an object implementing a protocol reuses
-its predicate declarations by providing an implementation for those predicates and
-exposing those predicates to its clients. An essential consequence of this
-generalization is that protocols, objects, and categories are first-class entities
-while e.g. *prototype*, *parent*, *class*, *instance*, *metaclass*, *subclass*,
-*superclass*, or *ancestor* are just *roles* that an object can play. Moreover, a
-language can provide multiple reuse patterns instead of selecting a set of patterns
-and supporting this set as a design choice that excludes other reuse patterns. For
-example, most imperative object-oriented languages are either class-based or
-prototype-based. In contrast, Logtalk naturally supports both classes and prototypes
-by providing the corresponding reuse patterns using objects as first-class entities
-capable of playing multiple roles.
+Второе критическое обобщение касается связи между объектами и другими
+сущностями, такими как протоколы (интерфейсы) и объектами-предками. Идея заключается в том, что отношения сущностей определяют *шаблоны повторного использования* и *роли*, которые они там играют.
+Распространенным шаблоном повторного использования является *наследование*. В этом случае сущность наследует и, таким образом, повторно использует ресурсы от сущности-предка. В шаблоне повторного использования каждый участвующий объект играет определенную *роль*. Однако одна и та же сущность может играть несколько ролей в зависимости от ее отношений с другими сущностями. Например, объект может играть роль класса для своих экземпляров, роль подкласса для своих суперклассов и роль экземпляра для своего метакласса. Другим распространенным шаблоном повторного использования является *реализация протокола*. В этом случае объект, реализующий протокол, повторно использует свои объявления предикатов, предоставляя реализацию для этих предикатов и предоставляя эти предикаты своим клиентам в качестве "точек доступа". Существенным следствием этого обобщения является то, что протоколы, объекты и категории являются объектами первого класса, в то время как, например, *прототип*, *родитель*, *класс*, *экземпляр*, *метакласс*, *подкласс*, *суперкласс* или *предок* - это просто *роли*, которые объект может играть. Более того, язык может предоставлять несколько шаблонов повторного использования вместо выбора набора шаблонов и поддержки этого набора в качестве выбора дизайна, который исключает другие шаблоны повторного использования. 
+Например, большинство императивных объектно-ориентированных языков основаны либо на классах, либо на прототипах. Напротив, Logtalk естественным образом поддерживает как классы, так и прототипы, предоставляя соответствующие шаблоны повторного использования, используя объекты как сущности первого класса, способные играть несколько ролей.

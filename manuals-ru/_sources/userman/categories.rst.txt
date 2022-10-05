@@ -101,13 +101,7 @@ Logtalk определяет встроенную категорию ref:`core_m
 
    :- end_category.
 
-Each object importing this category will have its own ``attribute_/2``
-private, dynamic predicate. The predicates ``attribute/2``,
-``set_attribute/2``, and ``del_attribute/2`` always access and modify
-the dynamic predicate contained in the object receiving the
-corresponding messages (i.e. *self*). But it's also possible to define
-predicates that handle dynamic predicates in the context of *this*
-instead of *self*. Например:
+Каждый объект, импортирующий эту категорию, будет иметь свой собственный   динамический ``private``-предикат ``attribute_/2``. Предикаты ``attribute/2``, ``set_attribute/2`` и ``del_attribute/2`` получают доступ к динамическим предикатам объекта, меняют их содержание при получении соответствующего сообщения (т.е. *self*). Но также можно определить предикаты, которые обрабатывают динамические предикаты, в контексте *this* вместо *self*. Например:
 
 ::
 
@@ -121,35 +115,31 @@ instead of *self*. Например:
        :- dynamic(attribute_/2).
 
        attribute(Attribute, Value) :-
-           % call in the context of "this"
+           % доступ в контексте "this"
            attribute_(Attribute, Value).
 
        set_attribute(Attribute, Value) :-
-           % retract old clauses in "this"
+           % удаление в контексте "this"
            retractall(attribute_(Attribute, _)),
-           % asserts clause in "this"
+           % добалени фразы в "this"
            assertz(attribute_(Attribute, Value)).
 
        del_attribute(Attribute, Value) :-
-           % retract clause in "this"
+           % удалени фразы в "this"
            retract(attribute_(Attribute, Value)).
 
    :- end_category.
 
-When defining a category that declares and handles dynamic predicates,
-working in the context of *this* ties those dynamic predicates to the
-object importing the category while working in the context of *self*
-allows each object inheriting from the object that imports the category
-to have its own set of clauses for those dynamic predicates.
+При определении категории, которая объявляет и обрабатывает динамические предикаты в контексте *this* связывает эти динамические предикаты с
+объектом, импортирующим эту категорию. Если использовать контекст *self*, то это дает возможность во всех наследниках объекта, импортирующего категорию,
+иметь свой собственный набор фраз для этих динамических предикатов.
 
 .. _categories_patching:
 
-Hot patching
-------------
+Исправление объекта во время выполнения
+---------------------------------------
 
-A category may also explicitly complement one or more existing objects,
-thus providing :term:`hot patching` functionality inspired by Objective-C
-categories:
+Категория может также явным образом дополнять один или несколько существующих объектов, таким образом, обеспечивая функциональность :term:`hot patching`, реализованную по аналогии с категориями Objective-C:
 
 ::
 
@@ -158,23 +148,11 @@ categories:
        ...
    :- end_category.
 
-This allows us to add missing directives (e.g. to define
-:term:`aliases <predicate alias>` for complemented object predicates),
-replace broken predicate definitions, add new predicates, and add protocols
-and categories to existing objects without requiring access or modifications
-to their source code. Common scenarios are adding logging or debugging
-predicates to a set of objects. Complemented objects need to be compiled
-with the :ref:`complements <flag_complements>` compiler flag set ``allow``
-(to allow both patching and adding functionality) or ``restrict`` (to allow
-only adding new functionality). A complementing category takes preference
-over a previously loaded complementing category for the same object thus
-allowing patching a previous patch if necessary.
+Конструктция позволяет добавить отсутствующие директивы (например, определить
+псевдонимы :term:`aliases <predicate alias>` для предикатов в объекте, к которому применяется процедура дополнения), заменить неработающие реализации предикатов, добавление новых предикатов, протоколов и категорий к существующим объектам без необходимости доступа и модификаций к исходному их коду. Распространенные сценарий использования - добавление записи событий в журнал или добавление отладочных предикатов к набору объектов. Дополняемые объекты должны быть скомпилированы
+с помощью флага компилятора :ref:`complements <flag_complements>` с параметром ``allow`` (разрешить исправление или добавление новых функций) или ``restrict`` (разрешить только добавление новых функций). Дополняющая категория имеет преимущество перед ранее загруженной дополняющей категорией для того же объекта, что позволяет вносить исправления в предыдущие исправления.
 
-When replacing a predicate definition, it is possible to call the overriden
-definition in the object from the new definition in the category by annoting
-the goal with the **experimental** ``@`` prefix operator. This goal annotation
-is only valid in the context of a complementing category and for compile time
-bound goals. As an example, consider the following object:
+При замене реализации предиката можно вызвать предыдущую реализацию в объекте из нового определения в категории, сообщив цель при помощи **экспериментального*** префиксного оператора ``@``. Такая декларация цели действительна только в контексте дополняющей категории и для предикатов, переопределяемых только во время исполнения программы. В качестве примера рассмотрим следующий объект:
 
 ::
 
@@ -188,8 +166,7 @@ bound goals. As an example, consider the following object:
 
    :- end_object.
    
-We can use the ``@`` goal annotation to e.g. wrap the original ``make_sound/0``
-predicate definition by writing:
+Здесь используется вызов цели ``@`` для "обрамления" оригинальной реализации предиката ``make_sound/0``:
 
 ::
 
@@ -203,8 +180,8 @@ predicate definition by writing:
 
    :- end_category.
 
-After loading the object and the category, calling the ``make_sound/0``
-predicate will result in the following output:
+После загрузки объекта и категории вызов предиката ``make_sound/0``
+приведет к следующему результату:
 
 .. code-block:: text
 
@@ -215,64 +192,43 @@ predicate will result in the following output:
    ... finished making sound.
    yes
 
-Note that :term:`super calls <super call>` from predicates defined in
-complementing categories lookup inherited definitions as if the calls
-were made from the complemented object instead of the category ancestors.
-This allows more comprehensive object patching. But it also means that,
-if you want to patch an object so that it imports a category that extends
-another category and uses super calls to access the extended category
-predicates, you will need to define a (possibly empty) complementing
-category that extends the category that you want to add.
+Обратите внимание, что механизм поиска унаследованных реализаций (:term:``super calls <super call>``) будет вызывать унаследованные реализации дополняемого объекта, вместо реализаций в предках категории.
+Это позволяет более филигранно исправлять объекты. Но это также означает, что если надо исправить объект таким образом, чтобы он импортировал категорию, которая наследует другую категорию и использует супервызовы к своим категориям-предкам, вам нужно будет реализовать (возможно, пустую) дополняющую категорию, которая наследует категорию, которую вы хотите добавить.
 
-An unfortunate consequence of allowing an object to be patched at
-runtime using a complementing category is that it disables the use of
-:term:`static binding` optimizations for messages sent to the complemented
-object as it can always be later patched, thus rendering the static
-binding optimizations invalid.
+Использование механизма исправления объектов во время исполнения, к сожалению, отключает возможность оптимизации статического связывания (:term:`static binding`) для сообщений, отправляемых в исправляемый объект, так как он может быть позже дополнительно изменен.
 
-Another important caveat is that, while a complementing category can
-replace a predicate definition, local callers of the replaced predicate
-will still call the non-patched version of the predicate. This is a
-consequence of the lack of a portable solution at the
-:term:`backend Prolog compiler` level for replacing static predicate
-definitions.
+Еще одно важное замечание - хоть и дополняющая категория заменяет реализацию предиката, но локальные вызовы замененного предиката по-прежнему будут идти в оригинальную неисправленную версию предиката. Отсутствие универсального переносимого решения на уровне
+адаптеров компиляторов (:term:`backend Prolog compiler`) для замены статических определений предикатов.
 
 .. _categories_finding:
 
-Finding defined categories
---------------------------
+Поиск реализованных категорий
+-----------------------------
 
-We can find, by backtracking, all defined categories by using the
-:ref:`predicates_current_category_1` built-in predicate with a
-unbound argument:
+При помощи бэктрекинга все скомпилированные категории можно перечислить, делается это при помощи встроенного предиката :ref:`predicates_current_category_1` со
+свободным аргументом:
 
 .. code-block:: text
 
    | ?- current_category(Category).
 
-This predicate can also be used to test if a category is defined by
-calling it with a valid category identifier (an atom or a compound
-term).
+Этот предикат также используется для проверки, существует ли категория, для этого передаем в параметр ее идентификатором или соответствующий составной терм.
 
 .. _categories_creating:
 
-Creating a new category in runtime
-----------------------------------
+Создание новой категории во время выполнения
+--------------------------------------------
 
-A category can be dynamically created at runtime by using the
-:ref:`predicates_create_category_4` built-in predicate:
+Категории можно создавать динамически во время выполнения программы с помощью
+встроенного предиката :ref:`predicates_create_category_4`:
 
 .. code-block:: text
 
    | ?- create_category(Category, Relations, Directives, Clauses).
 
-The first argument should be either a variable or the name of the new
-category (a Prolog atom, which must not match with an existing entity
-name). The remaining three arguments correspond to the relations
-described in the opening category directive and to the category code
-contents (directives and clauses).
+Первый аргумент - либо переменная, либо имя новой категории (атом Prolog, который не должен совпадать с именем уже существующей сущности). Остальные три аргумента соответствуют отношениям, которые задаются в директиве начала описания категории, и содержимому кода категории (директивы и высказывания).
 
-For example, the call:
+Например, вызов:
 
 .. code-block:: text
 
@@ -283,7 +239,7 @@ For example, the call:
             [(foo(X):-bar(X)), bar(1), bar(2)]
         ).
 
-is equivalent to compiling and loading the category:
+эквивалентен компиляции и загрузке категории:
 
 ::
 
@@ -302,276 +258,256 @@ is equivalent to compiling and loading the category:
 
    :- end_category.
 
-If we need to create a lot of (dynamic) categories at runtime, then is
-best to define a metaclass or a prototype with a predicate that will
-call this built-in predicate in order to provide more sophisticated
-behavior.
+Если нам нужно создать много (динамических) категорий во время выполнения, то
+лучше всего реализовать метакласс или прототип с предикатом, который
+будет вызывать этот встроенный предикат, чтобы обеспечить более специфическое
+поведение.
 
 .. _categories_abolishing:
 
-Abolishing an existing category
+Удаление существующей категории
 -------------------------------
 
-Dynamic categories can be abolished using the
-:ref:`predicates_abolish_category_1` built-in predicate:
+Динамические категории могут быть удалены из памяти процесса при помощи
+встроенного предиката :ref:`predicates_abolish_category_1`:
 
 .. code-block:: text
 
    | ?- abolish_category(Category).
 
-The argument must be an identifier of a defined dynamic category,
-otherwise an error will be thrown.
+Аргумент должен быть идентификатором существующей динамической категории,
+в противном случае будет выдана ошибка.
 
 .. _categories_directives:
 
-Category directives
--------------------
+Директивы, используемые в реализации категорий
+----------------------------------------------
 
-Category directives are used to define category properties, to document
-a category dependencies on other Logtalk entities, and to load the
-contents of files into a category.
+Директивы категорий используются для определения их свойств, для документирования зависимостей категорий от других сущностей Logtalk, а также для загрузки в нее содержимого файлов.
 
 .. _categories_dynamic:
 
-Dynamic categories
-~~~~~~~~~~~~~~~~~~
+Динамические категории
+~~~~~~~~~~~~~~~~~~~~~~
 
-As usually happens with Prolog code, a category can be either static or
-dynamic. A category created during the execution of a program is always
-dynamic. A category defined in a file can be either dynamic or static.
-Dynamic categories are declared by using the :ref:`directives_dynamic_0`
-directive in the category source code:
+Как и Prolog, категория может статической, так и динамической. Категория, созданная во время выполнения программы, всегда
+динамическая. Категория, определенная в файле, может быть как динамической, так и статической.
+Динамические категории объявляются с помощью директивы :ref:`directives_dynamic_0`
+в исходном коде категории:
 
 ::
 
    :- dynamic.
 
-The directive must precede any predicate directives or clauses. Please
-be aware that using dynamic code results in a performance hit when
-compared to static code. We should only use dynamic categories when
-these need to be abolished during program execution.
+Директива должна предшествовать любым директивам спецификации предикатов и их реализациям. Имейте в виду, что использование динамического кода приводит к снижению производительности по сравнению со его статическим вариантом. Динамические категории имеет смысл использовать только тогда, когда
+они должны быть по каким-то причинам удалены во время выполнения программы.
 
 .. _categories_documentation:
 
-Category documentation
-~~~~~~~~~~~~~~~~~~~~~~
+Документирование категорий
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-A category can be documented with arbitrary user-defined information
-by using the :ref:`directives_info_1` entity directive. See the
-:ref:`documenting_documenting` section for details.
+Категории следует документировать при помощи информации для пользователя, для этого есть директивы :ref:`directives_info_1'. Смотрите раздел
+:ref:`documenting_documenting` для получения подробной информации.
 
 .. _categories_include:
 
-Loading files into a category
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Загрузка файлов в категорию
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The :ref:`directives_include_1` directive
-can be used to load the contents of a file into a category. See the
-:ref:`objects_objects` section for an example of using this
-directive.
+Директива :ref:`directives_include_1` используется для загрузки содержимого файла в категорию. Смотрите раздел :ref:`objects_objects`, где приведен пример использования этой
+директивы.
 
 .. _categories_object_aliases:
 
-Declaring object aliases
-~~~~~~~~~~~~~~~~~~~~~~~~
+Задание псевдонимов объектам
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The :ref:`directives_uses_1` directive can be used to declare object aliases.
-The typical uses of this directive is to shorten long object names and to
-simplify experimenting with different object implementations of the same
-protocol when using explicit message sending.
+Директива :ref:`directives_uses_1` позволяет задавать псевдонимы объектам.
+Типичное использование этой директивы заключается в сокращении длинных имен объектов и упрощении экспериментов с различными реализациями объектов одного и того же
+протокола при использовании явной отправки сообщений.
 
 .. _categories_relationships:
 
-Category relationships
-----------------------
+Отношения между категориями
+---------------------------
 
-Logtalk provides two sets of built-in predicates that enable us to query
-the system about the possible relationships that a category can have
-with other entities.
+Logtalk предоставляет два набора встроенных предикатов, позволяющих запрашивать систему о структуре связей, в которых состоит категория с другими объектами.
 
-The built-in predicates :ref:`predicates_implements_protocol_2_3`
-and :ref:`predicates_conforms_to_protocol_2_3`
-allows us to find which categories implements which protocols:
+Встроенные предикаты :ссылка:`predicates_implements_protocol_2_3` и :ref:`predicates_conforms_to_protocol_2_3` предоставляют информацию о том, как категории реализуют протоколы:
 
 .. code-block:: text
 
    | ?- implements_protocol(Category, Protocol, Scope).
 
-or, if we also want to consider inherited protocols:
+или, если надо посмотреть унаследованные протоколы:
 
 .. code-block:: text
 
    | ?- conforms_to_protocol(Category, Protocol, Scope).
 
-Note that, if we use a unbound first argument, we will need to use the
-:ref:`predicates_current_category_1` built-in predicate to ensure that
-the returned entity is a category and not an object.
+Обратите внимание, что если передать в предикат свободный первый аргумент, то нам пред запросом надо запустить цель :ref:`predicates_current_category_1`, чтобы задать
+возвращаемой сущности тип категории, а не любой объект.
 
-To find which objects import which categories we can use the
-:ref:`predicates_imports_category_2_3` built-in predicates:
+Чтобы определить, какие объекты импортируют какие категории, используем
+встроенные предикаты :ref:`predicates_imports_category_2_3`:
 
 .. code-block:: text
 
    | ?- imports_category(Object, Category).
 
-or, if we also want to know the importation scope:
+или, если надо узнать ограничения для пространства имен во время импорта:
 
 .. code-block:: text
 
    | ?- imports_category(Object, Category, Scope).
 
-Note that a category may be imported by several objects.
+Помним, что категория может быть импортирована несколькими объектами.
 
-To find which categories extend other categories we can use the
-:ref:`predicates_extends_category_2_3` built-in predicates:
+Чтобы найти, какие категории наследуют (расширяют) другие категории, можно использовать встроенные предикаты :ref:`predicates_extends_category_2_3`:
 
 .. code-block:: text
 
    | ?- extends_category(Category1, Category2).
 
-or, if we also want to know the extension scope:
+или, если нужно также пространство имен:
 
 .. code-block:: text
 
    | ?- extends_category(Category1, Category2, Scope).
 
-Note that a category may be extended by several categories.
+Любая категория может быть расширена несколькими категориями.
 
-To find which categories explicitly complement existing objects we can
-use the :ref:`predicates_complements_object_2` built-in predicate:
+Чтобы найти, какие категории явно дополняют существующие объекты, можно
+использовать встроенный предикат :ref:`predicates_complements_object_2`:
 
 .. code-block:: text
 
    | ?- complements_object(Category, Object).
 
-Note that a category may explicitly complement several objects.
+Обратите внимание, что категория может явно дополнять несколько объектов.
 
 .. _categories_properties:
 
-Category properties
--------------------
+Свойства категории
+------------------
 
-We can find the properties of defined categories by calling the built-in
-predicate :ref:`predicates_category_property_2`:
+Можем узнать информацию о свойствах существующих категорий, вызвав встроенный
+предикат :ref:`predicates_category_property_2`:
 
 .. code-block:: text
 
    | ?- category_property(Category, Property).
 
-The following category properties are supported:
+Поддерживаются следующие свойства категории:
 
 ``static``
-   The category is static
+   Категория статическая
 ``dynamic``
-   The category is dynamic (and thus can be abolished in runtime by
-   calling the :ref:`predicates_abolish_category_1` built-in predicate)
-``built_in``
-   The category is a built-in category (and thus always available)
+   Категория является динамической, и, следовательно, может быть удалена из памяти во время выполнения при помощи
+   вызова встроенного предиката :ref:`predicates_abolish_category_1`)
+``built-in``
+   Категория является встроенной, и, таким образом, всегда доступна.
 ``file(Path)``
-   Absolute path of the source file defining the category (if
-   applicable)
+   Абсолютный путь к исходному файлу с исходным кодом категории (если
+   такой есть)
 ``file(Basename, Directory)``
-   Basename and directory of the source file defining the category (if
-   applicable); ``Directory`` always ends with a ``/``
+   Базовое имя и каталог исходного файла исходного кода категории (если
+   такой имеется); ``Directory`` всегда заканчивается ``/``
 ``lines(BeginLine, EndLine)``
-   Source file begin and end lines of the category definition (if
-   applicable)
+   Начальная и конечная строки определения категории в файле исходного кода(если
+   такой имеется)
 ``events``
-   Messages sent from the category generate events
+   Сообщения, отправленные из категории, генерируют события
 ``source_data``
-   Source data available for the category
+   Исходные данные, доступные для категории
 ``public(Resources)``
-   List of public predicates and operators declared by the category
+   Список ``public``-предикатов и операторов, объявленных в категории
 ``protected(Resources)``
-   List of protected predicates and operators declared by the category
+   Список ``private``-предикатов и операторов, объявленных в категории
 ``private(Resources)``
-   List of private predicates and operators declared by the category
+   Список ``private``-предикатов и операторов, объявленных в категории
 ``declares(Predicate, Properties)``
-   List of :ref:`properties <grammar_entity_properties>` for a predicate declared by the category
+   Список свойств (:ref:`properties <grammar_entity_properties>`) предиката, декларированного в категории 
 ``defines(Predicate, Properties)``
-   List of :ref:`properties <grammar_entity_properties>` for a predicate defined by the category
+   Список :ref:`properties <grammar_entity_properties>` для предиката, определенного в категории
 ``includes(Predicate, Entity, Properties)``
-   List of :ref:`properties <grammar_entity_properties>` for an object multifile predicate that are defined
-   in the specified entity (the properties include
-   ``number_of_clauses(Number)``, ``number_of_rules(Number)``, and
-   ``line_count(Line)`` with ``Line`` being the begin line of the
-   first multifile predicate clause)
+   Список :ref:`properties <grammar_entity_properties>` для многофайловых предикатов
+   в указанном объекте (свойства включают
+   ``number_of_clauses(Number)``, ``number_of_rules(Number)`` и
+   ``line_count(Line)``, значение ``Line`` будет соответствовать
+   первой фразе многофайлового предиката)
 ``provides(Predicate, Entity, Properties)``
-   List of :ref:`properties <grammar_entity_properties>` for other entity multifile predicate that are
-   defined in the category (the properties include
-   ``number_of_clauses(Number)``, ``number_of_rules(Number)``, and
-   ``line_count(Line)`` with ``Line`` being the begin line of the
-   first multifile predicate clause)
+   Список :ref:`properties <grammar_entity_properties>` для другого многофайлового предиката, который
+   определен в категории (свойства включают
+   ``number_of_clauses(Number)``, ``number_of_rules(Number)`` и
+   ``line_count(Line)``, значение ``Line`` будет соответствовать
+   первой фразе многофайлового предиката)
 ``alias(Predicate, Properties)``
-   List of :ref:`properties <grammar_entity_properties>` for a :term:`predicate alias` declared by the category
-   (the properties include ``for(Original)``, ``from(Entity)``,
-   ``non_terminal(NonTerminal)``, and ``line_count(Line)`` with ``Line``
-   being the begin line of the alias directive)
+   Список :ref:`properties <grammar_entity_properties>` для синонима (:term:`predicate alias`), объявленного в категории
+   (список свойств включает ``for(Original)``, ``from(Entity)``,
+   ``non_terminal(NonTerminal)`` и ``line_count(Line)``, при этом ``Line``
+   будет равна номеру первой строки директивы ``alias``)
 ``calls(Call, Properties)``
-   List of :ref:`properties <grammar_entity_properties>` for predicate calls made by the category (``Call``
-   is either a predicate indicator or a control construct such as
-   ``(::)/1-2`` or ``(^^)/1`` with a predicate indicator as argument; note
-   that ``Call`` may not be ground in case of a call to a control
-   construct where its argument is only know at runtime; the properties
-   include ``caller(Caller)``, ``alias(Alias)``, and
-   ``line_count(Line)`` with both ``Caller`` and ``Alias`` being
-   predicate indicators and ``Line`` being the begin line of the
-   predicate clause or directive making the call)
+   Список :ref:`properties <grammar_entity_properties>` вызовов предикатов, выполняемых категорией (``Call``
+   - это или предикат или управляющая конструкция, такая как
+   ``(::)/1-2`` или ``(^^)/1`` с аргументом-предикатом; при этом
+   значение ``Call`` не может быть основным термом в случае вызова управляющей control
+   структуры, если ее аргумент известен только во время выполнения; свойства
+   включают ``caller(Caller)``, ``alias(Alias)`` и
+   ``line_count(Line)``, при этом и ``Caller`` и ``Alias`` - 
+   это предикаты, а ``Line`` - номер строки, где 
+   в предикате или директиве выполняется вызов
 ``updates(Predicate, Properties)``
-   List of :ref:`properties <grammar_entity_properties>` for dynamic predicate updates (and also access
-   using the ``clause/2`` predicate) made by the object (``Predicate``
-   is either a predicate indicator or a control construct such as
-   ``(::)/1-2`` or ``(:)/2`` with a predicate indicator as argument; note
-   that ``Predicate`` may not be ground in case of a control construct
-   argument only know at runtime; the properties include
-   ``updater(Updater)``, ``alias(Alias)``, and ``line_count(Line)`` with
-   ``Updater`` being a (possibly multifile) predicate indicator,
-   ``Alias`` being a predicate indicator, and ``Line`` being the begin
-   line of the predicate clause or directive updating the predicate)
+   Список :ref:`properties <grammar_entity_properties>` динамических обновлений предикатов (а также доступ
+   используя предикат ``clause/2``), реализованный объектом (``Predicate``
+   - это или предикат или управляющая конструкция, такая как
+   ``(::)/1-2`` или ``(:)/2`` с предикатом в качестве аргумента; заметим, что
+   значение ``Predicate`` не может быть основным термом в случае управляющей структуры,
+   где аргумент известен время выполнения; свойства включают
+   ``updater(Updater)``, ``alias(Alias)`` и ``line_count(Line)``, где
+   ``Updater`` - это мозможно мультифайловый предикат,
+   ``Alias`` - предикат и ``Line`` -
+   номер первой строки реализации предиката или директивы, обновляющей предикат)
 ``number_of_clauses(Number)``
-   Total number of predicate clauses defined in the category (includes
-   both user-defined clauses and auxiliary clauses generated by the
-   compiler or by the :ref:`expansion hooks <expansion_expansion>` but
-   does not include clauses for multifile predicates defined for other
-   entities or clauses for the category own multifile predicates
-   contributed by other entities)
+   Общее количество фраз предиката, заданных в категории (включает
+   как определяемые пользователем высказывания, так и вспомогательные, генерируемые
+   компилятором или механизмом :ref:`expansion hooks <expansion_expansion>`, но
+   это число не включает фразы многофайловых предикатов, определенных для других
+   сущностей, а также фраз категории, определенных многофайлово и
+   предоставленных другими сущностями)
 ``number_of_rules(Number)``
-   Total number of predicate rules defined in the category (includes
-   both user-defined rules and auxiliary rules generated by the compiler
-   or by the :ref:`expansion hooks <expansion_expansion>` but does not
-   include rules for multifile predicates defined for other entities or
-   rules for the category own multifile predicates contributed by other
-   entities)
+   Общее количество правил предикатов, определенных в категории (включает
+   как правила пользователя, так и вспомогательные правила, сгенерированные компилятором
+   или механизмом :ref:`expansion hooks <expansion_expansion>`, но не
+   включает правила для многофайловых предикатов, определенных для других сущностей, и
+   правил для категории, заданной многофайлово, предикатов, созданных другими
+   сущностями)
 ``number_of_user_clauses(Number)``
-   Total number of user-defined predicate clauses defined in the
-   category (does not include clauses for multifile predicates defined
-   for other entities or clauses for the category own multifile predicates
-   contributed by other entities)
+   Общее количество определяемых пользователем высказываний, определенных в
+   категория (не включает фразы из многофайловых предикатов, определенных
+   для других сущностей или фраз в категории, заданной многофайлово, а также
+   предоставленными другими сущностями)
 ``number_of_user_rules(Number)``
-   Total number of user-defined predicate rules defined in the category
-   (does not include rules for multifile predicates defined for other
-   entities or rules for the category own multifile predicates contributed
-   by other entities)
+   Общее количество пользовательских правил, определенных в категории
+   это число не включает фразы многофайловых предикатов, определенных для других
+   сущностей или правил в категории, реализованной многофайлово или полученных из внесенные
+   других программных объектов)
 
-Some properties such as line numbers are only available when the category is
-defined in a source file compiled with the :ref:`source_data <flag_source_data>`
-flag turned on. Moreover, line numbers are only supported in
-:term:`backend Prolog compilers <backend Prolog compiler>`
-that provide access to the start line of a read term. When such support is
-not available, the value ``-1`` is returned for the start and end lines.
+Некоторые свойства, такие как номера строк, доступны только тогда, когда категория
+определяется в исходном файле и скомпилирована с установленным флагом :ref:`source_data<flag_source_data>`. Кроме того, номера строк поддерживаются только в
+:term:`backend Prolog compilers<backend Prolog compiler>`,
+которые предоставляют доступ к начальной строке в процедуре чтения терма. Когда такая поддержка недоступна, возвращается значение ``-1`` и для начальной и для конечной строк.
 
-The properties that return the number of clauses (rules) report the
-clauses (rules) *textually defined in the object* for both multifile and
-non-multifile predicates. Thus, these numbers exclude clauses (rules)
-for multifile predicates *contributed* by other entities.
+Свойства, возвращающие количество фраз (правил), выдают фразы (правила), которые *текстово определены в объекте* как для многофайловых, так и для не-многофайловых предикатов. Таким образом, эти числа исключают фразы (правила)
+для многофайловых предикатов *добавленных* другими сущностями.
 
 .. _categories_importing:
 
-Importing categories
---------------------
+Импорт категорий
+----------------
 
-Any number of objects can import a category. In addition, an object may
-import any number of categories. The syntax is very simple:
+Любое количество объектов может импортировать категорию. Кроме того, объект может импортировать любое количество категорий. Синтаксис очень простой:
 
 ::
 
@@ -580,9 +516,7 @@ import any number of categories. The syntax is very simple:
        ...
    :- end_object.
 
-To make all public predicates imported via a category protected or to
-make all public and protected predicates private we prefix the
-category's name with the corresponding keyword:
+Чтобы сделать все ``public``-предикаты, импортируемые через категорию, ``protected``- или ``private``-предикатами (также можно ``protected`` превратить в ``private``), к названию категории добавляется соответствующее ключевое слово:
 
 ::
 
@@ -600,7 +534,7 @@ category's name with the corresponding keyword:
        ...
    :- end_object.
 
-Omitting the scope keyword is equivalent to writing:
+Пропуск этого ключевого слова эквивалентно записи:
 
 ::
 
@@ -611,12 +545,11 @@ Omitting the scope keyword is equivalent to writing:
 
 .. _categories_predicates:
 
-Calling category predicates
----------------------------
+Вызов предикатов, реализованных в категории
+-------------------------------------------
 
-Category predicates can be called from within an object by sending a
-message to *self* or using a *super* call. Consider the following
-category:
+Предикаты категории вызываются изнутри объекта при помощи отправки
+сообщения *self*-у или при помощи *super*-вызова. Рассмотрим следующую категорию:
 
 ::
 
@@ -629,8 +562,8 @@ category:
 
    :- end_category.
 
-The predicate ``out/1`` can be called from within an object importing
-the category by simply sending a message to *self*. Например:
+Предикат ``out/1`` вызывается из объекта, импортирующего
+категорию, отправив сообщение *self*-у (себе). Например:
 
 ::
 
@@ -645,13 +578,10 @@ the category by simply sending a message to *self*. Например:
 
    :- end_object.
 
-This is the recommended way of calling a category predicate that can be
-specialized/overridden in a descendant object as the predicate definition
-lookup will start from *self*.
+Это рекомендуемый способ вызова предиката категории, который может быть
+специализирован/переопределен далее при наследовании (расширении), так как поиск реализации предиката начнется с *self*.
 
-A direct call to a predicate definition found in an imported category can
-be made using the :ref:`control_call_super_1`
-control construct. Например:
+Прямой вызов определения предиката импортированной категории, выполняется при помощи управляющей конструкции :ref:`control_call_super_1`. Например:
 
 ::
 
@@ -666,28 +596,18 @@ control construct. Например:
 
    :- end_object.
 
-This alternative should only be used when the user knows a priori that
-the category predicates will not be specialized or redefined by
-descendant objects of the object importing the category. Its advantage
-is that, when the :ref:`optimize <flag_optimize>` flag is turned
-on, the Logtalk compiler will try to optimize the calls by using
-:term:`static binding`. When :term:`dynamic binding` is used due to e.g.
-the lack of sufficient information at compilation time, the performance is
-similar to calling the category predicate using a message to :term:`self`
-(in both cases a predicate lookup caching mechanism is used).
+Этот вариант следует использовать только тогда, когда пользователь априори знает, что
+предикаты категории не будут специализироваться или переопределены в потомках объекта, импортирующего категорию. Его преимущество заключается в том, что если флаг :ref:`optimize <flag_optimize>` включен при компиляции Logtalk, система попытается оптимизировать вызовы с помощью
+статического связывания :term:`static binding`. Если используется :term:`dynamic binding`, например из-за отсутствия достаточной информации во время компиляции, производительность будет примерно соответствовать вызову предиката категории, запрашивая :term:`self` (в обоих случаях используется механизм кэширования поиска предиката в объектной иерархии).
 
 .. _categories_parametric:
 
-Parametric categories
----------------------
+Параметризованные категории
+---------------------------
 
-Category predicates can be parameterized in the same way as object predicates
-by using a compound term as the category identifier where all the arguments
-of the compound term are variables. These variables, the *category parameters*, 
-can be accessed by calling the :ref:`methods_parameter_2` or
-:ref:`methods_this_1` built-in local methods in the category predicate
-clauses or by using :term:`parameter variables <parameter variable>`.
-Category parameter values can be defined by the importing objects.
+Предикаты категории могут быть параметризованы таким же образом, как и предикаты объекта, используя составной терм в качестве идентификатора категории, в этом терме все аргументы должны быть переменными. К этим переменным, *параметрам категории*, можно получить доступ при помощи встроенных методов :ref:`methods_parameter_2` и :ref:`methods_this_1` в
+категории или при помощи :term:`parameter variables <parameter variable>`.
+Значения параметров категории могут быть определены импортирующими объектами.
 Например:
 
 ::
@@ -697,24 +617,19 @@ Category parameter values can be defined by the importing objects.
        ...
    :- end_object.
 
-Note that access to category parameters is only possible from within the
-category. In particular, calls to the :ref:`methods_this_1` built-in local method
-from category predicates always access the importing object identifier
-(and thus object parameters, not category parameters).
+Доступ к параметрам категории возможен только внутри категории. В частности, вызовы встроенного метода :ref:`methods_this_1` из предикатов категории всегда обращаются к идентификатору импортирующего объекта, и, следовательно, к параметрам объекта, а не к параметрам категории.
 
 .. _categories_built_in:
 
-Built-in categories
--------------------
+Встроенные категории
+--------------------
 
-Logtalk defines a built-in category that is always available for any
-application.
+Logtalk определяет встроенную категорию, которая всегда доступна всем приложениям.
 
 .. _categories_core_messages:
 
-The built-in category ``core_messages``
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Встроенная категория `core_messages`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The built-in :ref:`core_messages <apis:core_messages/0>` category provides
-default translations for all compiler and runtime printed messages such as
-warnings and errors. It does not define any public predicates.
+Встроенная категория :ref:`core_messages <apis:core_messages/0>` предоставляет
+переводы по умолчанию для всех выводимых на стандартный вывод сообщений компилятора и среды выполнения, таких как предупреждения и ошибки. Она не определяет никаких ``public``-предикатов.

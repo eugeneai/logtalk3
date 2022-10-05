@@ -411,7 +411,7 @@ existing entity name). The remaining three arguments correspond to the
 relations described in the opening object directive and to the object
 code contents (directives and clauses).
 
-For example, the call:
+Например, вызов:
 
 .. code-block:: text
 
@@ -542,9 +542,7 @@ object source code:
 
    :- dynamic.
 
-The directive must precede any predicate directives or clauses. Please
-be aware that using dynamic code results in a performance hit when
-compared to static code. We should only use dynamic objects when these
+Директива должна предшествовать любым директивам спецификации предикатов и их реализациям. Имейте в виду, что использование динамического кода приводит к снижению производительности по сравнению со его статическим вариантом. We should only use dynamic objects when these
 need to be abolished during program execution. In addition, note that we
 can declare and define dynamic predicates within a static object.
 
@@ -554,8 +552,8 @@ Object documentation
 ~~~~~~~~~~~~~~~~~~~~
 
 An object can be documented with arbitrary user-defined information
-by using the :ref:`directives_info_1` entity directive. See the
-:ref:`documenting_documenting` section for details.
+by using the :ref:`directives_info_1` entity directive. Смотрите раздел
+:ref:`documenting_documenting` для получения подробной информации.
 
 .. _objects_include:
 
@@ -588,10 +586,10 @@ dynamically. Например:
 
 .. _objects_object_aliases:
 
-Declaring object aliases
-~~~~~~~~~~~~~~~~~~~~~~~~
+Задание псевдонимов объектам
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The :ref:`directives_uses_1` directive can be used to declare object aliases.
+Директива :ref:`directives_uses_1` позволяет задавать псевдонимы объектам.
 The typical uses of this directive include shortening long object names,
 working consistently with specific parameterizations of parametric objects,
 and simplifying experimenting with different object implementations of the
@@ -639,7 +637,7 @@ For prototypes, we can query extension relations using with the
 
    | ?- extends_object(Object, Parent).
 
-or, if we also want to know the extension scope:
+или, если нужно также пространство имен:
 
 .. code-block:: text
 
@@ -652,7 +650,7 @@ In order to find which objects import which categories we can use the
 
    | ?- imports_category(Object, Category).
 
-or, if we also want to know the importation scope:
+или, если надо узнать ограничения для пространства имен во время импорта:
 
 .. code-block:: text
 
@@ -666,7 +664,7 @@ To find which objects implements which protocols we can use the
 
    | ?- implements_protocol(Object, Protocol, Scope).
 
-or, if we also want to consider inherited protocols:
+или, если надо посмотреть унаследованные протоколы:
 
 .. code-block:: text
 
@@ -713,7 +711,7 @@ The following object properties are supported:
    Absolute path of the source file defining the object (if applicable)
 ``file(Basename, Directory)``
    Basename and directory of the source file defining the object (if
-   applicable); ``Directory`` always ends with a ``/``
+   такой имеется); ``Directory`` всегда заканчивается ``/``
 ``lines(BeginLine, EndLine)``
    Source file begin and end lines of the object definition (if
    applicable)
@@ -742,43 +740,43 @@ The following object properties are supported:
 ``defines(Predicate, Properties)``
    List of :ref:`properties <grammar_entity_properties>` for a predicate defined by the object
 ``includes(Predicate, Entity, Properties)``
-   List of :ref:`properties <grammar_entity_properties>` for an object multifile predicate that are defined
-   in the specified entity (the properties include
-   ``number_of_clauses(Number)``, ``number_of_rules(Number)``, and
-   ``line_count(Line)`` with ``Line`` being the begin line of the
-   first multifile predicate clause)
+   Список :ref:`properties <grammar_entity_properties>` для многофайловых предикатов
+   в указанном объекте (свойства включают
+   ``number_of_clauses(Number)``, ``number_of_rules(Number)`` и
+   ``line_count(Line)``, значение ``Line`` будет соответствовать
+   первой фразе многофайлового предиката)
 ``provides(Predicate, Entity, Properties)``
-   List of :ref:`properties <grammar_entity_properties>` for other entity multifile predicate that are
+   Список :ref:`properties <grammar_entity_properties>` для другого многофайлового предиката, который
    defined in the object (the properties include
-   ``number_of_clauses(Number)``, ``number_of_rules(Number)``, and
-   ``line_count(Line)`` with ``Line`` being the begin line of the
-   first multifile predicate clause)
+   ``number_of_clauses(Number)``, ``number_of_rules(Number)`` и
+   ``line_count(Line)``, значение ``Line`` будет соответствовать
+   первой фразе многофайлового предиката)
 ``alias(Predicate, Properties)``
    List of :ref:`properties <grammar_entity_properties>` for a :term:`predicate alias` declared by the object
-   (the properties include ``for(Original)``, ``from(Entity)``,
-   ``non_terminal(NonTerminal)``, and ``line_count(Line)`` with ``Line``
-   being the begin line of the alias directive)
+   (список свойств включает ``for(Original)``, ``from(Entity)``,
+   ``non_terminal(NonTerminal)`` и ``line_count(Line)``, при этом ``Line``
+   будет равна номеру первой строки директивы ``alias``)
 ``calls(Call, Properties)``
    List of :ref:`properties <grammar_entity_properties>` for predicate calls made by the object (``Call``
-   is either a predicate indicator or a control construct such as
-   ``(::)/1-2`` or ``(^^)/1`` with a predicate indicator as argument; note
-   that ``Call`` may not be ground in case of a call to a control
-   construct where its argument is only know at runtime; the properties
-   include ``caller(Caller)``, ``alias(Alias)``, and
-   ``line_count(Line)`` with both ``Caller`` and ``Alias`` being
-   predicate indicators and ``Line`` being the begin line of the
-   predicate clause or directive making the call)
+   - это или предикат или управляющая конструкция, такая как
+   ``(::)/1-2`` или ``(^^)/1`` с аргументом-предикатом; при этом
+   значение ``Call`` не может быть основным термом в случае вызова управляющей control
+   структуры, если ее аргумент известен только во время выполнения; свойства
+   включают ``caller(Caller)``, ``alias(Alias)`` и
+   ``line_count(Line)``, при этом и ``Caller`` и ``Alias`` - 
+   это предикаты, а ``Line`` - номер строки, где 
+   в предикате или директиве выполняется вызов
 ``updates(Predicate, Properties)``
-   List of :ref:`properties <grammar_entity_properties>` for dynamic predicate updates (and also access
-   using the ``clause/2`` predicate) made by the object (``Predicate``
-   is either a predicate indicator or a control construct such as
-   ``(::)/1-2`` or ``(:)/2`` with a predicate indicator as argument; note
-   that ``Predicate`` may not be ground in case of a control construct
-   argument only know at runtime; the properties include
-   ``updater(Updater)``, ``alias(Alias)``, and ``line_count(Line)`` with
-   ``Updater`` being a (possibly multifile) predicate indicator,
-   ``Alias`` being a predicate indicator, and ``Line`` being the begin
-   line of the predicate clause or directive updating the predicate)
+   Список :ref:`properties <grammar_entity_properties>` динамических обновлений предикатов (а также доступ
+   используя предикат ``clause/2``), реализованный объектом (``Predicate``
+   - это или предикат или управляющая конструкция, такая как
+   ``(::)/1-2`` или ``(:)/2`` с предикатом в качестве аргумента; заметим, что
+   значение ``Predicate`` не может быть основным термом в случае управляющей структуры,
+   где аргумент известен время выполнения; свойства включают
+   ``updater(Updater)``, ``alias(Alias)`` и ``line_count(Line)``, где
+   ``Updater`` - это мозможно мультифайловый предикат,
+   ``Alias`` - предикат и ``Line`` -
+   номер первой строки реализации предиката или директивы, обновляющей предикат)
 ``number_of_clauses(Number)``
    Total number of predicate clauses defined in the object at compilation
    time (includes both user-defined clauses and auxiliary clauses generated
@@ -813,15 +811,12 @@ argument of the ``caller/1`` property is ``:-/1``.
 
 Some properties such as line numbers are only available when the object is
 defined in a source file compiled with the :ref:`source_data <flag_source_data>`
-flag turned on. Moreover, line numbers are only supported in
-:term:`backend Prolog compilers <backend Prolog compiler>`
-that provide access to the start line of a read term. When such support is
-not available, the value ``-1`` is returned for the start and end lines.
+flag turned on. Кроме того, номера строк поддерживаются только в
+:term:`backend Prolog compilers<backend Prolog compiler>`,
+которые предоставляют доступ к начальной строке в процедуре чтения терма. Когда такая поддержка недоступна, возвращается значение ``-1`` и для начальной и для конечной строк.
 
-The properties that return the number of clauses (rules) report the
-clauses (rules) *textually defined in the object* for both multifile and
-non-multifile predicates. Thus, these numbers exclude clauses (rules)
-for multifile predicates *contributed* by other entities.
+Свойства, возвращающие количество фраз (правил), выдают фразы (правила), которые *текстово определены в объекте* как для многофайловых, так и для не-многофайловых предикатов. Таким образом, эти числа исключают фразы (правила)
+для многофайловых предикатов *добавленных* другими сущностями.
 
 .. _objects_built_in:
 

@@ -270,14 +270,14 @@ Currently, Logtalk supports the following module directives:
 ``use_module/2``
    This directive is compiled as a Logtalk
    :ref:`directives_uses_2` directive in order
-   to ensure correct compilation of the module predicate clauses. Функция
+   to ensure correct compilation of the module predicate clauses.  
    first argument of this directive must be the module **name** (an
    atom), not a module file specification (the adapter files attempt to
    use the Prolog dialect level term-expansion mechanism to find the
    module name from the module file specification). Note that the module
    is not automatically loaded by Logtalk (as it would be when compiling
    the directive using Prolog instead of Logtalk; the programmer may
-   also want the specified module to be compiled as an object). Функция
+   also want the specified module to be compiled as an object).  
    second argument must be a predicate indicator (``Name/Arity``), a
    grammar rule non-terminal indicator (``Name//Arity``), a operator
    declaration, or a list of predicate indicators, grammar rule
@@ -286,13 +286,13 @@ Currently, Logtalk supports the following module directives:
    in alternative, the notation ``Name/Arity:Alias/Arity``. Similar for
    non-terminal aliases.
 ``export/1``
-   Exported predicates are compiled as public object predicates. Функция
+   Exported predicates are compiled as public object predicates.  
    argument must be a predicate indicator (``Name/Arity``), a grammar
    rule non-terminal indicator (``Name//Arity``), an operator
    declaration, or a list of predicate indicators, grammar rule
    non-terminal indicators, and operator declarations.
 ``reexport/2``
-   Reexported predicates are compiled as public object predicates. Функция
+   Reexported predicates are compiled as public object predicates.  
    first argument is the module name. The second argument must be a
    predicate indicator (``Name/Arity``), a grammar rule non-terminal
    indicator (``Name//Arity``), an operator declaration, or a list of

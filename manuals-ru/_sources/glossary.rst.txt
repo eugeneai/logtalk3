@@ -274,7 +274,7 @@ Glossary
       An entity characterized by an :term:`identity` and a set of
       :term:`predicates directives <predicate directive>` and clauses.
       Logtalk objects can be either static or dynamic. Logtalk objects
-      can play the *role* of classes, instances, or prototypes. Функция
+      can play the *role* of classes, instances, or prototypes.  
       role or roles an object plays are a function of its relations
       with other objects.
 

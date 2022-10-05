@@ -627,8 +627,8 @@ using the :ref:`directives_info_2` directive:
 
    :- info(Name/Arity, List).
 
-The second argument is a list of ``Key is Value`` terms. See the
-:ref:`documenting_documenting` section for details.
+The second argument is a list of ``Key is Value`` terms. Смотрите раздел
+:ref:`documenting_documenting` для получения подробной информации.
 
 .. _predicates_multifile:
 
@@ -1747,8 +1747,7 @@ Some properties such as line numbers are only available when the entity
 holding the predicates is defined in a source file compiled with the
 :ref:`source_data <flag_source_data>` flag turned on. Moreover, line
 numbers are only supported in :term:`backend Prolog compilers <backend Prolog compiler>`
-that provide access to the start line of a read term. When such support is
-not available, the value ``-1`` is returned for the start and end lines.
+that provide access to the start line of a read term. Когда такая поддержка недоступна, возвращается значение ``-1`` и для начальной и для конечной строк.
 
 .. _predicates_finding:
 

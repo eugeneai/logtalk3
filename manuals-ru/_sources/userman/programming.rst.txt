@@ -726,7 +726,7 @@ Version flags
    integers and the last argument is an atom, possibly empty,
    representing version status: ``aN`` for alpha versions, ``bN`` for
    beta versions, ``rcN`` for release candidates (with ``N`` being a
-   natural number), and ``stable`` for stable versions. Функция
+   natural number), and ``stable`` for stable versions.  
    ``version_data`` flag is also a de facto standard for Prolog
    compilers.
 
@@ -985,7 +985,7 @@ Optional features compilation flags
 
 ``context_switching_calls(Option)``
    Allows context switching calls (``(<<)/2``) to be either allowed or
-   denied. Possible option values are ``allow`` and ``deny``. Функция
+   denied. Possible option values are ``allow`` and ``deny``.  
    default flag vale is ``allow``. Note that changing this option is of
    no consequence for objects already compiled and loaded.
 
