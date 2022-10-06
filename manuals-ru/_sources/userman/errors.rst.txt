@@ -9,31 +9,27 @@
 
        http://www.apache.org/licenses/LICENSE-2.0
 
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
+   Если это не требуется законодательством или не согласовано в письменной форме, программное обеспечение
+   распространяется по лицензии на условиях "КАК ЕСТЬ".,
+   БЕЗ КАКИХ-ЛИБО ГАРАНТИЙ ИЛИ УСЛОВИЙ, явных или подразумеваемых.
+   См. лицензию для конкретного языка, регулирующего разрешения и
+   ограничения, предусмотренные Лицензией.
 
 
 .. _errors_errors:
 
-Error handling
-==============
+Обработка ошибок
+================
 
-Error handling is accomplished in Logtalk by using the standard ``catch/3``
-and ``throw/1`` predicates [ISO95]_ together with a set of built-in methods
-that simplify generating errors decorated with expected context.
+Обработка ошибок выполняется в Logtalk с помощью стандартных предикатов ``catch/3`` и ``throw/1`` [ISO95]_, кроме того, есть набор встроенных методов, упрощающих порождение ошибок, декорируемых в текущим контекстом (совокупностью взаимодействующих сущностей).
 
-Errors thrown by Logtalk have, whenever possible, the following format:
+Ошибки, порождаемые Logtalk, как правило, имеют следующий формат:
 
 ::
 
    error(Error, logtalk(Goal, ExecutionContext))
 
-In this exception term, ``Goal`` is the goal that triggered the error
-``Error`` and ``ExecutionContext`` is the context in which ``Goal`` is
-called. Например:
+В этой структуре-исключении ``Goal`` - цель, которая вызвала ошибку, ``Error`` и ``ExecutionContext`` - контекст, в котором ``Goal`` была вызвана. Например:
 
 ::
 
@@ -42,20 +38,12 @@ called. Например:
        logtalk(foo::abolish(p/0), _)
    )
 
-Note, however, that ``Goal`` and ``ExecutionContext`` can be unbound or only
-partially instantiated when the corresponding information is not available
-(e.g. due to compiler optimizations that throw away the necessary error context
-information). The ``ExecutionContext`` argument is an opaque term that
-can be decoded using the
-:ref:`logtalk::execution_context/7 <logtalk/0::execution_context/7>` predicate.
+Обратите внимание, что ``Goal`` and ``ExecutionContext`` могут быть несвязанными или только частично конкретизированными. Такое случается, когда соответствующая информация недоступна, например, из-за выполненной компилятором оптимизации, в результате которой существенная информация о контексте ошибки была удалена. Аргумент ``ExecutionContext`` является непонятным на первый взгляд термом, но его можно задекодировать при помощи предиката :ref:`logtalk::execution_context/7 <logtalk/0::execution_context/7>.
 
-Raising Exceptions
-------------------
+Порождение исключения
+---------------------
 
-The :ref:`error handling section <error_handling_methods>` in the reference
-manual lists a set of convenient built-in methods that generate ``error/2``
-exception terms with the expected context argument. For example, instead of
-manually constructing a type error as in:
+Раздел :ref:`error handling section <error_handling_methods>` в справочнике  содержит список встроенных методов, порождающих терм-исключение ``error/2`` с подходящим контекстом в качестве аргумента. Например, вместо ручного создания ошибки типа, как в:
 
 ::
 
@@ -63,37 +51,27 @@ manually constructing a type error as in:
    context(Context),
    throw(error(type_error(atom, 42), Context)).
 
-we can simply write:
+можно просто написать:
 
 ::
 
    ...,
    type_error(atom, 42).
 
-The provided error built-in methods cover all standard error types found in
-the ISO Prolog Core standard.
+Предоставленные встроенные методы обработки ошибок охватывают все стандартные типы ошибок, перечисленные в стандарте ISO Prolog Core.
 
-Type-checking
+Проверка типа
 -------------
 
-One of the most common case where errors may be generated is when
-type-checking predicate arguments and input data before processing it.
-The standard library includes a :ref:`type <apis:type/0>` object that 
-defines an extensive set of types, together with predicates for validating
-and checking terms. The set of types is user extensible and new types can
-be defined by adding clauses for the ``type/1`` and ``check/2`` multifile
-predicates. For example, assume that we want to be able to check
-*temperatures* expressed in Celsius, Fahrenheit, or Kelvin scales. We
-start by declaring (in an object or category) the new type:
+Один из наиболее распространенных случаев, порождающих ошибки, - это проверка типов аргументов предиката и входных данных перед их обработкой.
+Стандартная библиотека включает в себя объект :ref:`type <apis:type/0>`, при помощи которого задается обширный набор типов вместе с предикатами для тестирования свойств и верификации термов. Набор типов можно дополнять: новые типы задаются при помощи добавления новых утверждений для предикатов ``type/1`` и ``check/2``, которые являются мультифайловыми. Например, разработаем проверку *температуры*, выраженную в шкалах Цельсия, Фаренгейта или Кельвина. Начнем с объявления в объекте или категории нового типа:
 
 ::
 
    :- multifile(type::type/1).
    type::type(temperature(_Unit)).
 
-Next, we need to define the actual code that would verify that a temperature
-is valid. As the different scales use a different value for absolute zero,
-we can write:
+Далее нам нужно реализовать программный код, проверяющий, что температура корректна. Поскольку разные шкалы используют разное значение для абсолютного нуля, запишем:
 
 ::
 
@@ -101,8 +79,8 @@ we can write:
    type::check(temperature(Unit), Term) :-
        check_temperature(Unit, Term).
 
-   % given that temperature has only a lower bound, we make use of the library
-   % property/2 type to define the necessary test expression for each unit
+   % полагая, что температура имеет только нижнюю границу, используем библиотеку
+   % property/2 для задания необходимого выражения для каждой единицы измерения температуры
    check_temperature(celsius, Term) :-
        type::check(property(float, [Temperature]>>(Temperature >= -273.15)), Term).
    check_temperature(fahrenheit, Term) :-
@@ -110,26 +88,19 @@ we can write:
    check_temperature(kelvin, Term) :-
        type::check(property(float, [Temperature]>>(Temperature >= 0.0)), Term).
 
-With this definition, a term is first checked that it is a float value before
-checking that it is in the expected open interval. But how do we use this new
-type? If we want just to test if a temperature is valid, we can write:
+Сначала проверяется, что это значение с плавающей запятой, а затем уже, что оно находится в ожидаемом интервале. Но как используется этот новый тип? Если надо проверить, является ли температура корректной, используем:
 
 ::
 
    ..., type::valid(temperature(celsius), 42.0), ...
 
-The :ref:`type::valid/2 <apis:type/0::valid/2>` predicate succeeds or fails
-depending on the second argument being of the type specified in the first
-argument. If instead of success or failure we want to generate an error for
-invalid values, we can use the :ref:`type::check/2 <apis:type/0::check/2>`
-predicate instead:
+Предикат :ref:`type::valid/2 <apis:type/0::valid/2>` успешен или нет - зависит от второго аргумента, подходящего под тип, указанный в первом аргументе. Если вместо успеха или неудачи надо сгенерировать ошибку с указанием недопустимого значения, используем предикат :ref:`type::check/2 <apis:type/0::check/2>` вместо:
 
 ::
 
    ..., type::check(temperature(celsius), 42.0), ...
 
-If we require an ``error/2`` exception term with the error context, we can
-use instead the :ref:`type::check/3 <apis:type/0::check/3>` predicate:
+Если требуется терм-исключение ``error/2`` с контекстом ошибки, используем вместо него предикат :ref:`type::check/3 <apis:type/0::check/3>`:
 
 ::
 
@@ -138,253 +109,185 @@ use instead the :ref:`type::check/3 <apis:type/0::check/3>` predicate:
    type::check(temperature(celsius), 42.0, Context),
    ...
 
-Note that ``context/1`` calls are inlined and messages to the library
-``type`` object use :term:`static binding` when compiling with the
-:ref:`optimize flag <flag_optimize>` turned on, thus enabling efficient
-type-checking.
+Обратите внимание, что вызовы ``context/1`` встроены (inlined) и отправляют сообщения к библиотечному объекту ``type`` в режиме статического связывания (:term:`static binding`), если программа была скомпилирована со включенным флагом :ref:`optimize flag <flag_optimize>`, что обеспечивает эффективную проверку типов.
 
-Expected terms
---------------
+Ожидаемые термы
+---------------
 
-Support for representing and handling *expected terms* is provided by the
-:doc:`../libraries/expecteds` library. Expected terms allows defering errors
-to later stages of an application in alternative to raising an exception as
-soon as an error is detected.
+Поддержка представления и обработки *ожидаемых термов* обеспечивается
+библиотекой :doc:`../libraries/expecteds`. Ожидаемые термы позволяют откладывать ошибки на более позднее время исполнения приложения, вместо генерирования исключения как только ошибка обнаружена.
 
-Compiler warnings and errors
-----------------------------
+Предупреждения и ошибки во время компиляции
+-------------------------------------------
 
-The current Logtalk compiler uses the standard ``read_term/3`` built-in
-predicate to read and compile a Logtalk source file. This improves the
-compatibility with :term:`backend Prolog compilers <backend Prolog compiler>`
-and their proprietary syntax extensions and standard compliance quirks. But one
-consequence of this design choice is that invalid Prolog terms or syntax errors
-may abort the compilation process with limited information given to the user
-(due to the inherent limitations of the ``read_term/3`` predicate).
+Настоящая версия компилятора Logtalk использует стандартный предикат ``read_term/3`` для чтения и компиляции исходного файла Logtalk. Это улучшает совместимость с:term:`backend Prolog compilers <backend Prolog compiler>` и закрытыми синтаксическими расширениями, причудами соответствия стандартнам. Но одним из последствий такого дизайна является то, что недопустимые по структуре термы Prolog или синтаксические ошибки прерывают процесс компиляции, пользователю выдается непонятная информация из-за присущих предикату ``read_term/3`` ограничений.
 
-Assuming that all the terms in a source file are valid, there is a set of
-errors and potential errors, described below, that the compiler will try
-to detect and report, depending on the used compiler flags (see the
-:ref:`programming_flags` section of this manual on lint flags for details).
+Предполагая, что все термины в исходном файле имеют правильную структуру, существует набор синтаксических и смысловых ошибок, которые компилятор попытается распознать. Объем технической информации об ошибках зависит от используемых флагов компилятора (подробности в разделе :ref:`programming_flags` этого руководства).
 
 .. _errors_unknown:
 
-Unknown entities
-~~~~~~~~~~~~~~~~
+Неизвестные сущности
+~~~~~~~~~~~~~~~~~~~~
 
-The Logtalk compiler warns about any referenced entity that is not
-currently loaded. The warning may reveal a misspell entity name or just
-an entity that it will be loaded later. Out-of-oder loading should be
-avoided when possible as it prevents some code optimizations such as
-:term:`static binding` of messages to methods.
+Компилятор Logtalk предупреждает об объектах, на которые кто-то ссылается, но он в данный момент еще не загружен. Предупреждение может указывать на орфографическую ошибку в имени объекта или указать просто сущность, которая будет загружена позже. 
+По возможности следует избегать загрузки вне определенного порядка, поскольку это не дает делать полноценную оптимизацию кода, например, статическое связывание :term:`static binding` сообщений с методами.
 
 .. _errors_singletons:
 
-Singleton variables
-~~~~~~~~~~~~~~~~~~~
+Переменные, использованные только раз
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Singleton variables in a clause are often misspell variables and, as
-such, one of the most common errors when programming in Prolog.
-Assuming that the :term:`backend Prolog compiler` implementation of the
-``read_term/3`` predicate supports the standard ``singletons/1``
-option, the compiler warns about any singleton variable found while
-compiling a source file.
+Одинокие переменные (singleton variables) в тексте правила часто появляются из-за ошибок в их имени, - это одна из наиболее распространенных ошибок при программировании в Prolog.
+Если реализация предиката ``read_term/3`` базового компилятора Prolog-а (:term:`backend Prolog compiler`) поддерживает настройку ``singleletons/1``, то компилятор будет предупреждать о любой обнаруженной одинокой переменной.
 
 .. _errors_prolog:
 
-Redefinition of Prolog built-in predicates
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Переопределение встроенных в Prolog предикатов
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The Logtalk compiler will warn us of any redefinition of a Prolog
-built-in predicate inside an object or category. Sometimes the redefinition
-is intended. In other cases, the user may not be aware that a particular
-:term:`backend Prolog compiler` may already provide the predicate
-as a built-in predicate or may want to ensure code portability among
-several Prolog compilers with different sets of built-in predicates.
+Компилятор Logtalk предупредит о попытке переопределения встроенных предикатов Prolog внутри объекта или категории. Иногда переопределение является преднамеренным. В других случаях пользователь может не знать, что конкретный компилятор :term:(`backend Prolog compiler`) уже предоставляет предикат в качестве встроенного или, возможно, надо обеспечить переносимость кода среди нескольких компиляторов Prolog с разными наборами встроенных предикатов.
 
 .. _errors_redefinition_predicates:
 
-Redefinition of Logtalk built-in predicates
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Переопределение встроенных предикатов Logtalk
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Similar to the redefinition of Prolog built-in predicates, the Logtalk
-compiler will warn us if we try to redefine a Logtalk built-in. But the
-redefinition will probably be an error in most (if not all) cases.
+Подобно переопределению встроенных предикатов Prolog, компилятор Logtalk
+предупредит, если осуществляется попытка переопределить встроенный предикат Logtalk. Однако такое переопределение, вероятно, будет ошибкой в большинстве случаев.
 
 .. _errors_redefinition_methods:
 
-Redefinition of Logtalk built-in methods
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Переопределение встроенных методов Logtalk
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-An error will be thrown if we attempt to redefine a Logtalk built-in
-method inside an entity. The default behavior is to report the error and
-abort the compilation of the offending entity.
+При попытке переопределить встроенный метод в Logtalk-сущности будет выдана ошибка. По умолчанию компилятор сообщит об ошибке и прервет трансляцию объекта-нарушителя.
 
 .. _errors_misspell:
 
-Misspell calls of local predicates
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Неправильные имена вызовов локальных предикатов
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-A warning will be reported if Logtalk finds (in the body of a predicate
-definition) a call to a local predicate that is not defined, built-in
-(either in Prolog or in Logtalk) or declared dynamic. In most cases
-these calls are simple misspell errors.
+Если Logtalk обнаружит в теле предиката вызов локального предиката, который не определен, не является встроенным (в Прологе или в Logtalk) или объявленным как динамический, то будет выдано предупреждение. В большинстве случаев такие вызовы являются простыми ошибками орфографии.
 
 .. _errors_portability:
 
-Portability warnings
-~~~~~~~~~~~~~~~~~~~~
+Предупреждения о переносимости
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-A warning will be reported if a predicate clause contains a call to a
-non-standard built-in predicate or arithmetic function, Portability
-warnings are also reported for non-standard flags or flag values. These
-warnings often cannot be avoided due to the limited scope of the ISO
-Prolog standard.
+Предупреждение генерируется, если тело предиката содержит вызовы нестандартных встроенных предикатов или арифметических функции, оно также выдается при использовании нестандартных флагов или их значений. Эти предупреждения, как правило, нельзя избежать из-за ограниченной области стандартизации ISO Prolog.
 
 .. _errors_deprecated:
 
-Deprecated elements
+Устаревшие элементы
 ~~~~~~~~~~~~~~~~~~~
 
-A warning will be reported if a deprecated directive, control construct,
-or predicate is used. These warnings should be fixed as soon as possible
-as support for any deprecated features will likely be discontinued in
-future versions.
+При использовании устаревшей директивы, управляющей конструкции или предиката будет выдано соответствующее предупреждение. Эти предупреждения должны быть исправлены как можно скорее, поскольку поддержка любых устаревших функций, скорее всего, будет прекращена в будущих версиях.
 
 .. _errors_missing_directives:
 
-Missing directives
-~~~~~~~~~~~~~~~~~~
+Отсутствующие директивы
+~~~~~~~~~~~~~~~~~~~~~~~
 
-A warning will be reported for any missing dynamic, discontiguous,
-meta-predicate, and public predicate directive.
+Для любой отсутствующей директивы предиката dynamic, discontinuous, meta-predicate и public будет выдано предупреждение.
 
 .. _errors_duplicated_directives:
 
-Duplicated directives
-~~~~~~~~~~~~~~~~~~~~~
+Дублированные директивы
+~~~~~~~~~~~~~~~~~~~~~~~
 
-A warning will be reported for any duplicated scope, multifile, dynamic,
-discontiguous, meta-predicate, and meta-non-terminal directives. Note
-that conflicting directives for the same predicate are handled as
-errors, not as duplicated directive warnings.
+Для любых дублированных директив scope, multifile, dynamic, discontinuous, meta-predicate и meta-non-terminal будет выдано предупреждение. Обратите внимание, что конфликтующие директивы для одного и того же предиката обрабатываются как ошибки, а не как предупреждения о дублировании.
 
 .. _errors_duplicated_clauses:
 
-Duplicated clauses
-~~~~~~~~~~~~~~~~~~
+Дублирующиеся утверждения
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
-A warning will be reported for any duplicated entity clauses. This check
-is computationally heavy, however, and usually turned off by default.
+Предупреждение будет выдано, если в сущности будут замечены дублирующиеся утверждения. Однако эта проверка является сложной с точки зрения вычислений и по умолчанию обычно отключена.
 
 .. _errors_always_true_or_false_goals:
 
-Goals that are always true or false
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Цели, которые всегда являются истинными или ложными
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-A warning will be reported for any goal that is always true or false.
-This is usually caused by typos in the code. For example, writing
-``X == y`` instead of ``X == Y``.
+Предупреждение будет выдано для целей, которые всегда истинны или ложны.
+Обычно это вызвано опечатками в коде. Например: ``X == y`` вместо ``X == Y``.
 
 .. _errors_trivial_fails:
 
-Trivial fails
-~~~~~~~~~~~~~
+Тривиальные неудачи
+~~~~~~~~~~~~~~~~~~~
 
-A warning will be reported for any call to a local static predicate with
-no matching clause.
+При любом вызове локального статического предиката без унифицируемого ему утверждения будет выдано предупреждение.
 
 .. _errors_suspicious_calls:
 
-Suspicious calls
-~~~~~~~~~~~~~~~~
+Подозрительные вызовы
+~~~~~~~~~~~~~~~~~~~~~
 
-A warning will be reported for calls that are syntactically correct but most
-likely a semantic error. An example is :ref:`control_send_to_self_1` calls in
-clauses that apparently are meant to implement recursive predicate definitions
-where the user intention is to call the local predicate definition.
+Предупреждение будет выдано для вызовов, являющихся синтаксически правильными, но, вероятно, содержащими семантическую ошибку. Примером является вызов :ref:`control_send_to_self_1` в утверждениях, которые, по-видимому, предназначены для реализации рекурсивных определений предикатов, где пользователь намеревается вызвать определение локального предиката.
 
 .. _errors_lambda_variables:
 
-Lambda variables
+Лямбда-переменные
 ~~~~~~~~~~~~~~~~
 
-A warning will be reported for :term:`lambda expressions <lambda expression>`
-with unclassified variables (not listed as either :term:`lambda free <lambda free variable>`
-or :term:`lambda parameter` variables), for variables playing a dual role
-(as both lambda free and lambda parameter variables), and for lambda parameters
-used elsewhere in a clause.
+??Предупреждение будет выдано в случае выявления :term:`lambda expressions <lambda expression>` с неклассифицированными переменными (не указанными как :term:`lambda free <lambda free variable>` или :term:`lambda parameter`), для переменных, играющих двойственную роль (и как свободные lambda-переменные, так и lambda-параметры), так и для параметров lambda-функций, используемых в других местах утверждения.
 
 .. _errors_predicate_redefinition:
 
-Redefinition of predicates declared in ``uses/2`` or ``use_module/2`` directives
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Переопределение предикатов, объявленных в директивах ``uses/2`` или ``use_module/2``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-A error will be reported for any attempt to define locally a predicate
-that is already declared in an :ref:`directives_uses_2` or
-:ref:`directives_use_module_2` directive.
+При любой попытке определения локального предиката, который был импортирован из библиотеки :ref:`directives_uses_2` или :ref:`directives_use_module_2` будет сообщено об ошибке.
 
 .. _errors_others:
 
-Other warnings and errors
-~~~~~~~~~~~~~~~~~~~~~~~~~
+Прочие предупреждения и ошибки
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The Logtalk compiler will throw an error if it finds a predicate clause
-or a directive that cannot be parsed. The default behavior is to report
-the error and abort the compilation.
+Компилятор Logtalk выдаст ошибку, если найдет утверждение в предикате или директиву, которые невозможно странслировать. Поведение по умолчанию заключается в выводе ошибки и прерывании компиляции.
 
 .. _errors_runtime:
 
-Runtime errors
---------------
+Ошибки времени исполнения
+-------------------------
 
-This section briefly describes runtime errors that result from misuse of
-Logtalk built-in predicates, built-in methods or from message sending.
-For a complete and detailed description of runtime errors please consult
-the Reference Manual.
+В этом разделе кратко описываются ошибки времени исполнения, возникающие в результате неправильного использования встроенных предикатов Logtalk, встроенных методов или из-за неправильной посылки сообщения.
+Для получения подробного описания ошибок времени исполнения, пожалуйста, обратитесь к справочному руководству.
 
 .. _errors_predicates:
 
-Logtalk built-in predicates
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Встроенные предикаты Logtalk
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Most Logtalk built-in predicates checks the type and mode of the calling
-arguments, throwing an exception in case of misuse.
+Большинство встроенных предикатов Logtalk проверяют тип и режим использования аргументов, генерируя исключение в случае неправильного их использования.
 
 .. _errors_methods:
 
-Logtalk built-in methods
-~~~~~~~~~~~~~~~~~~~~~~~~
+Встроенные методы Logtalk
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Most Logtalk built-in method checks the type and mode of the calling
-arguments, throwing an exception in case of misuse.
+Большинство встроенных методов Logtalk проверяет тип и режим использования аргументов, порождая исключение в случае их неправильного использования.
 
 .. _errors_sending:
 
-Message sending
-~~~~~~~~~~~~~~~
+Отправка сообщений
+~~~~~~~~~~~~~~~~~~
 
-The message sending mechanisms always check if the receiver of a message
-is a defined object and if the message corresponds to a declared
-predicate within the scope of the sender. The built-in protocol
-:ref:`forwarding <apis:forwarding/0>` declares a predicate,
-:ref:`methods_forward_1`, which is automatically called (if defined) by
-the runtime for any message that the receiving object does not understand.
-The usual definition for this error handler is to delegate or forward the
-message to another object that might be able to answer it:
+Механизмы отправки сообщений всегда проверяют, является ли получатель сообщения определенным объектом и соответствует ли оно декларированному предикату в области видимости отправителя. Встроенный протокол :ref:`forwarding <apis:forwarding/0>` объявляет предикат :ref:`methods_forward_1`, который автоматически вызывается (если, конечно, был определен) средой исполнения при перехвате факта посылки сообщения к объекту, который его не понимает.
+Обычным определением для этого обработчика ошибок является делегирование или пересылка сообщения другому объекту, который мог бы ответить на него:
 
 ::
 
    forward(Message) :-
-       % forward the message while preserving the sender
+       % переслать сообщение с сохранением отправителя
        [Object::Message].
 
-If preserving the original sender is not required, this definition can
-be simplified to:
+Если сохранение информации об отправителе не требуется, это определение упрощается следующим образом:
 
 ::
 
    forward(Message) :-
        Object::Message.
 
-More sophisticated definitions are, of course, possible.
+Разумеется, возможны более сложные определения.
